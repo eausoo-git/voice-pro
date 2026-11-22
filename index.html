@@ -1200,8 +1200,7 @@
 })();
 </script>
 <!-- ▲ 객관적 데이터 & 남길 시그널 여러 줄 자동확장(Textarea) 변환 끝 ▲ -->
-
-<!-- ▼ 노이즈 리셋 통합 DB (4. 리셋 로그 탭 전용 + 안드로이드/아이폰 JSON 호환) 시작 ▼ -->
+<!-- ▼ 노이즈 리셋 통합 DB (4. 리셋 로그 탭 즉시 표시 + 안드로이드/아이폰 JSON 호환) 시작 ▼ -->
 <style>
   #svResetDbHub {
     margin-top: 16px;
@@ -1409,63 +1408,33 @@
   const DB_VERSION = 1;
   const STORE_NAME = 'reset_records';
   const LOCAL_MIRROR_KEY = 'stage_voice_reset_records_v1';
-  const PRESET_SEEDED_KEY = 'stage_voice_builtin_seeded_v2';
+  const PRESET_SEEDED_KEY = 'stage_voice_builtin_seeded_v3';
 
   let dbInstance = null;
   let activeFilter = 'all';
   let searchKeyword = '';
   let editingId = null;
 
-  function isElementVisible(el) {
+  function isVisible(el) {
     if (!el) return false;
     const rect = el.getBoundingClientRect();
-    const style = window.getComputedStyle(el);
-    return (
-      rect.width > 0 &&
-      rect.height > 0 &&
-      style.display !== 'none' &&
-      style.visibility !== 'hidden' &&
-      parseFloat(style.opacity || '1') > 0
-    );
+    const cs = window.getComputedStyle(el);
+    return rect.width > 20 && rect.height > 20 && cs.display !== 'none' && cs.visibility !== 'hidden';
   }
 
-  function isLogTabActive() {
-    const logTabBtn = Array.from(document.querySelectorAll('button, [role="tab"], a')).find((el) =>
-      /4\.\s*리셋\s*로그/.test((el.innerText || '').trim())
-    );
-    if (logTabBtn) {
-      const cls = (logTabBtn.className || '').toLowerCase();
-      const ariaSelected = logTabBtn.getAttribute('aria-selected');
-      const bg = window.getComputedStyle(logTabBtn).backgroundColor;
-      const isSelected =
-        ariaSelected === 'true' ||
-        /active|selected|current|on/.test(cls) ||
-        (bg && bg !== 'rgba(0, 0, 0, 0)' && bg !== 'transparent');
-      if (isSelected) return true;
-    }
-
-    const heading = Array.from(document.querySelectorAll('*')).find((el) =>
-      el.children.length === 0 && /나의 멘탈 리셋 & 성공 로그/.test((el.textContent || '').trim())
-    );
-    return Boolean(heading && isElementVisible(heading));
-  }
-
-  function findVisibleLogContainer() {
-    if (!isLogTabActive()) return null;
-
-    const heading = Array.from(document.querySelectorAll('*')).find((el) =>
-      el.children.length === 0 && /나의 멘탈 리셋 & 성공 로그/.test((el.textContent || '').trim())
-    );
-    if (!heading || !isElementVisible(heading)) return null;
-
-    let cur = heading.parentElement;
-    while (cur && cur !== document.body) {
-      if (isElementVisible(cur) && cur.offsetHeight >= 180) {
-        return cur;
-      }
-      cur = cur.parentElement;
-    }
-    return heading.parentElement;
+  // 현재 화면에 실제로 보이는 '나의 멘탈 리셋 & 성공 로그' 박스 찾기 (1·2·3 탭에서는 안 보임)
+  function findVisibleLogBox() {
+    const allEls = Array.from(document.querySelectorAll('div, section, article, main'));
+    const match = allEls.find((el) => {
+      if (el.id === 'svResetDbHub' || el.closest('#svResetDbHub')) return false;
+      if (!isVisible(el)) return false;
+      const txt = el.innerText || '';
+      const hasTitle = /나의 멘탈 리셋 & 성공 로그/.test(txt);
+      const hasStats = /누적 노이즈 리셋|실천 성공 체크/.test(txt);
+      const childCount = el.querySelectorAll('div').length;
+      return hasTitle && hasStats && childCount >= 3 && childCount <= 60;
+    });
+    return match || null;
   }
 
   function openResetDB() {
@@ -1549,7 +1518,7 @@
     const current = readLocalMirror();
     const idx = current.findIndex((r) => r.id === normalized.id);
     if (idx >= 0) current[idx] = normalized;
-    else current.push(normalized);
+    else current.unshift(normalized);
     writeLocalMirror(current);
 
     try {
@@ -1643,85 +1612,14 @@
     if (hasBuiltin && localStorage.getItem(PRESET_SEEDED_KEY) === 'true') {
       return;
     }
-
     const detected = collectBuiltinPresetsFromApp();
     for (const preset of detected) {
-      const already = existing.find((r) => r.id === preset.id);
-      if (!already) {
+      if (!existing.find((r) => r.id === preset.id)) {
         await putRecord(preset);
       }
     }
     localStorage.setItem(PRESET_SEEDED_KEY, 'true');
   }
-
-  function extractCurrentNoiseForm() {
-    const inputs = Array.from(document.body.querySelectorAll('textarea, input[type="text"]')).filter((el) => {
-      if (el.closest('#svResetDbHub')) return false;
-      const r = el.getBoundingClientRect();
-      return r.width > 40 && r.height > 16;
-    });
-
-    const values = inputs.map((el) => (el.value || '').trim()).filter(Boolean);
-    if (values.length === 0) return null;
-
-    const noise = values[0] || '';
-    const evidence1 = values[1] || '';
-    const evidence2 = values[2] || '';
-    const evidence3 = values[3] || '';
-    const signal = values[4] || values[values.length - 1] || '';
-
-    if (!noise && !evidence1 && !evidence2 && !evidence3 && !signal) return null;
-
-    return {
-      id: 'custom_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
-      source: 'custom',
-      createdAt: formatNow(),
-      noise,
-      evidence1,
-      evidence2,
-      evidence3,
-      signal,
-      completed: false
-    };
-  }
-
-  document.addEventListener('click', async (e) => {
-    const btn = e.target.closest('button');
-    if (btn && !btn.closest('#svResetDbHub')) {
-      const txt = (btn.innerText || '').trim();
-
-      if (/저장|리셋|기록|등록|시그널/.test(txt)) {
-        setTimeout(async () => {
-          const draft = extractCurrentNoiseForm();
-          if (draft && (draft.noise || draft.signal)) {
-            const existing = await getAllRecords();
-            const duplicate = existing.find(
-              (item) => item.noise === draft.noise && item.signal === draft.signal && item.createdAt.slice(0, 16) === draft.createdAt.slice(0, 16)
-            );
-            if (!duplicate) {
-              await putRecord(draft);
-              await renderHub();
-            }
-          }
-        }, 180);
-      }
-
-      if (/실천\s*성공\s*완료/.test(txt)) {
-        setTimeout(async () => {
-          const list = await getAllRecords();
-          const customOrLatest = [...list].reverse().find((r) => r.source === 'custom') || list[list.length - 1];
-          if (customOrLatest) {
-            await putRecord({ ...customOrLatest, completed: true });
-            await renderHub();
-          }
-        }, 180);
-      }
-    }
-
-    setTimeout(() => {
-      renderHub();
-    }, 80);
-  });
 
   async function exportRecordsToJSON() {
     await seedBuiltinPresetsOnce();
@@ -1742,10 +1640,7 @@
       try {
         const file = new File([blob], fileName, { type: 'application/json' });
         if (navigator.canShare({ files: [file] })) {
-          await navigator.share({
-            files: [file],
-            title: 'STAGE VOICE PRO JSON 백업'
-          });
+          await navigator.share({ files: [file], title: 'STAGE VOICE PRO JSON 백업' });
           return;
         }
       } catch (err) {
@@ -1784,7 +1679,248 @@
       if (navigator.share && navigator.canShare) {
         const file = new File([blob], fileName, { type: 'application/json' });
         if (navigator.canShare({ files: [file] })) {
-          await navigator.share
+          await navigator.share({ files: [file], title: 'STAGE VOICE PRO JSON 백업' });
+        }
+      }
+    }
+  }
+
+  async function importRecordsFromJSON(file) {
+    if (!file) return;
+    try {
+      const text = await file.text();
+      const parsed = JSON.parse(text);
+      if (!Array.isArray(parsed)) {
+        alert('올바른 JSON 백업 배열 형식이 아닙니다.');
+        return;
+      }
+      for (const item of parsed) {
+        if (item && item.id) {
+          await putRecord({
+            id: String(item.id),
+            source: item.source === 'builtin' ? 'builtin' : 'custom',
+            createdAt: String(item.createdAt || formatNow()),
+            noise: String(item.noise || ''),
+            evidence1: String(item.evidence1 || ''),
+            evidence2: String(item.evidence2 || ''),
+            evidence3: String(item.evidence3 || ''),
+            signal: String(item.signal || ''),
+            completed: Boolean(item.completed)
+          });
+        }
+      }
+      await renderHub();
+      alert(`${parsed.length}건의 데이터(기본 프리셋 + 사용자 항목)를 반영했습니다.`);
+    } catch (_) {
+      alert('JSON 파일을 읽는 중 오류가 발생했습니다.');
+    }
+  }
+
+  async function renderHub() {
+    const existingHub = document.getElementById('svResetDbHub');
+    const logBox = findVisibleLogBox();
+
+    if (!logBox) {
+      if (existingHub) existingHub.style.display = 'none';
+      return;
+    }
+
+    await seedBuiltinPresetsOnce();
+
+    let hub = existingHub;
+    if (!hub) {
+      hub = document.createElement('div');
+      hub.id = 'svResetDbHub';
+    }
+    hub.style.display = 'block';
+    if (logBox.parentElement && hub.parentElement !== logBox.parentElement) {
+      logBox.insertAdjacentElement('afterend', hub);
+    }
+
+    const allRecords = await getAllRecords();
+    const filtered = allRecords.filter((r) => {
+      if (activeFilter === 'done' && !r.completed) return false;
+      if (activeFilter === 'pending' && r.completed) return false;
+      if (searchKeyword.trim()) {
+        const q = searchKeyword.trim().toLowerCase();
+        const combined = [r.createdAt, r.source, r.noise, r.evidence1, r.evidence2, r.evidence3, r.signal].join(' ').toLowerCase();
+        if (!combined.includes(q)) return false;
+      }
+      return true;
+    });
+
+    const totalCount = allRecords.length;
+    const customCount = allRecords.filter((r) => r.source === 'custom').length;
+    const doneCount = allRecords.filter((r) => r.completed).length;
+
+    hub.innerHTML = `
+      <div class="sv-hub-header">
+        <div class="sv-hub-title">노이즈 리셋 통합 DB (총 ${totalCount}건 · 내 추가 ${customCount}건 · 완료 ${doneCount}건)</div>
+        <div class="sv-hub-actions">
+          <button type="button" class="sv-hub-btn primary" id="svBtnNewRecord">+ 새 항목 추가</button>
+          <button type="button" class="sv-hub-btn" id="svBtnExportJson">JSON 백업</button>
+          <button type="button" class="sv-hub-btn" id="svBtnImportJson">JSON 가져오기</button>
+          <input type="file" id="svFileImportJson" accept=".json,application/json" style="display:none;" />
+        </div>
+      </div>
+
+      <div class="sv-hub-toolbar">
+        <div class="sv-filter-group">
+          <button type="button" class="sv-filter-pill ${activeFilter === 'all' ? 'active' : ''}" data-filter="all">전체</button>
+          <button type="button" class="sv-filter-pill ${activeFilter === 'done' ? 'active' : ''}" data-filter="done">실천 성공 완료</button>
+          <button type="button" class="sv-filter-pill ${activeFilter === 'pending' ? 'active' : ''}" data-filter="pending">미완료</button>
+        </div>
+        <input type="text" class="sv-search-input" id="svSearchInput" placeholder="노이즈, 객관적 데이터, 시그널, 기본/추가 검색..." value="${searchKeyword.replace(/"/g, '&quot;')}" />
+      </div>
+
+      <div class="sv-record-list" id="svRecordList">
+        ${filtered.length === 0 ? `<div style="font-size:12px; color:#94a3b8; padding:12px 0;">표시할 항목이 없습니다. 상단의 [+ 새 항목 추가]로 바로 남길 수 있습니다.</div>` : ''}
+        ${filtered.map((rec) => {
+          if (editingId === rec.id) {
+            return `
+              <div class="sv-record-card" data-id="${rec.id}">
+                <div class="sv-record-top"><span>${rec.createdAt}</span><span>수정 중</span></div>
+                <div class="sv-edit-box">
+                  <input type="text" class="sv-edit-input" data-edit="noise" placeholder="노이즈" value="${(rec.noise || '').replace(/"/g, '&quot;')}" />
+                  <input type="text" class="sv-edit-input" data-edit="evidence1" placeholder="객관적 데이터 1" value="${(rec.evidence1 || '').replace(/"/g, '&quot;')}" />
+                  <input type="text" class="sv-edit-input" data-edit="evidence2" placeholder="객관적 데이터 2" value="${(rec.evidence2 || '').replace(/"/g, '&quot;')}" />
+                  <input type="text" class="sv-edit-input" data-edit="evidence3" placeholder="객관적 데이터 3" value="${(rec.evidence3 || '').replace(/"/g, '&quot;')}" />
+                  <input type="text" class="sv-edit-input" data-edit="signal" placeholder="남길 시그널" value="${(rec.signal || '').replace(/"/g, '&quot;')}" />
+                  <label style="font-size:12px; color:#e2e8f0; display:flex; align-items:center; gap:6px;">
+                    <input type="checkbox" data-edit="completed" ${rec.completed ? 'checked' : ''} /> 실천 성공 완료
+                  </label>
+                </div>
+                <div class="sv-card-foot">
+                  <button type="button" class="sv-mini-action" data-action="save-edit" data-id="${rec.id}">저장</button>
+                  <button type="button" class="sv-mini-action" data-action="cancel-edit" data-id="${rec.id}">취소</button>
+                </div>
+              </div>
+            `;
+          }
+
+          return `
+            <div class="sv-record-card" data-id="${rec.id}">
+              <div class="sv-record-top">
+                <span>${rec.createdAt}</span>
+                <div class="sv-badge-row">
+                  <span class="sv-source-badge ${rec.source === 'custom' ? 'custom' : ''}">${rec.source === 'custom' ? '사용자 추가' : '기본 내장'}</span>
+                  <span class="sv-status-badge ${rec.completed ? 'done' : 'pending'}">${rec.completed ? '실천 성공 완료' : '미완료'}</span>
+                </div>
+              </div>
+              <div class="sv-field-row">
+                <span class="sv-field-label">❌ 노이즈:</span>
+                <span class="sv-noise-text">${rec.noise || '-'}</span>
+              </div>
+              <div class="sv-field-row">
+                <span class="sv-field-label">📊 객관적 데이터 3가지:</span>
+                <ul class="sv-ev-list">
+                  <li>${rec.evidence1 || '-'}</li>
+                  <li>${rec.evidence2 || '-'}</li>
+                  <li>${rec.evidence3 || '-'}</li>
+                </ul>
+              </div>
+              <div class="sv-field-row">
+                <span class="sv-field-label">📡 남길 시그널:</span>
+                <span class="sv-signal-text">${rec.signal || '-'}</span>
+              </div>
+              <div class="sv-card-foot">
+                <button type="button" class="sv-mini-action" data-action="toggle-done" data-id="${rec.id}">${rec.completed ? '완료 해제' : '실천 성공 완료'}</button>
+                <button type="button" class="sv-mini-action" data-action="edit" data-id="${rec.id}">수정</button>
+                <button type="button" class="sv-mini-action" data-action="delete" data-id="${rec.id}">삭제</button>
+              </div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    `;
+
+    hub.querySelector('#svBtnNewRecord').onclick = async () => {
+      const newRec = {
+        id: 'custom_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
+        source: 'custom',
+        createdAt: formatNow(),
+        noise: '',
+        evidence1: '',
+        evidence2: '',
+        evidence3: '',
+        signal: '',
+        completed: false
+      };
+      await putRecord(newRec);
+      editingId = newRec.id;
+      await renderHub();
+    };
+
+    hub.querySelector('#svBtnExportJson').onclick = exportRecordsToJSON;
+
+    const fileInput = hub.querySelector('#svFileImportJson');
+    hub.querySelector('#svBtnImportJson').onclick = () => fileInput.click();
+    fileInput.onchange = (ev) => {
+      if (ev.target.files && ev.target.files[0]) {
+        importRecordsFromJSON(ev.target.files[0]);
+      }
+    };
+
+    hub.querySelectorAll('.sv-filter-pill').forEach((pill) => {
+      pill.onclick = async () => {
+        activeFilter = pill.dataset.filter;
+        await renderHub();
+      };
+    });
+
+    const searchEl = hub.querySelector('#svSearchInput');
+    searchEl.oninput = (ev) => {
+      searchKeyword = ev.target.value;
+      renderHub();
+    };
+
+    hub.querySelectorAll('[data-action]').forEach((btn) => {
+      btn.onclick = async () => {
+        const action = btn.dataset.action;
+        const id = btn.dataset.id;
+        const list = await getAllRecords();
+        const target = list.find((item) => item.id === id);
+        if (!target) return;
+
+        if (action === 'toggle-done') {
+          await putRecord({ ...target, source: 'custom', completed: !target.completed });
+          await renderHub();
+        } else if (action === 'delete') {
+          await deleteRecordById(id);
+          await renderHub();
+        } else if (action === 'edit') {
+          editingId = id;
+          await renderHub();
+        } else if (action === 'cancel-edit') {
+          editingId = null;
+          await renderHub();
+        } else if (action === 'save-edit') {
+          const card = hub.querySelector(`.sv-record-card[data-id="${id}"]`);
+          const updated = {
+            ...target,
+            source: 'custom',
+            noise: card.querySelector('[data-edit="noise"]').value.trim(),
+            evidence1: card.querySelector('[data-edit="evidence1"]').value.trim(),
+            evidence2: card.querySelector('[data-edit="evidence2"]').value.trim(),
+            evidence3: card.querySelector('[data-edit="evidence3"]').value.trim(),
+            signal: card.querySelector('[data-edit="signal"]').value.trim(),
+            completed: card.querySelector('[data-edit="completed"]').checked
+          };
+          editingId = null;
+          await putRecord(updated);
+          await renderHub();
+        }
+      };
+    });
+  }
+
+  setInterval(renderHub, 500);
+  document.addEventListener('click', () => setTimeout(renderHub, 60));
+  window.addEventListener('DOMContentLoaded', renderHub);
+})();
+</script>
+<!-- ▲ 노이즈 리셋 통합 DB (4. 리셋 로그 탭 즉시 표시 + 안드로이드/아이폰 JSON 호환) 끝 ▲ -->
+
 </body>
   
 </html>
