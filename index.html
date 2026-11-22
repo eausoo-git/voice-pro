@@ -1015,5 +1015,85 @@
       });
     }  
   </script>
+  <!-- ▼ 스마트 앱 설치 안내 배너 시작 ▼ -->
+<div id="pwa-install-banner" style="display:none; position:fixed; bottom:16px; left:16px; right:16px; max-width:440px; margin:0 auto; background:rgba(15,23,42,0.96); border:1px solid rgba(56,189,248,0.45); border-radius:14px; padding:14px 16px; box-shadow:0 10px 28px rgba(0,0,0,0.55); z-index:9999; backdrop-filter:blur(10px); color:#f8fafc; font-family:inherit;">
+  <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:10px;">
+    <div style="flex:1;">
+      <div style="font-size:13px; font-weight:700; color:#38bdf8; margin-bottom:4px;">📲 바탕화면(홈 화면)에 앱으로 추가</div>
+      <div id="pwa-banner-desc" style="font-size:12px; line-height:1.45; color:#cbd5e1;"></div>
+      <button id="pwa-install-btn" style="display:none; margin-top:10px; width:100%; background:#0284c7; color:#fff; border:none; border-radius:8px; padding:9px 12px; font-size:13px; font-weight:600; cursor:pointer;">지금 바로 앱 설치하기</button>
+    </div>
+    <button id="pwa-banner-close" aria-label="닫기" style="background:transparent; border:none; color:#94a3b8; font-size:16px; line-height:1; cursor:pointer; padding:2px 4px;">✕</button>
+  </div>
+</div>
+
+<script>
+(function() {
+  // 이미 홈 화면 앱(Standalone)으로 실행 중이면 표시 안 함
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+  if (isStandalone) return;
+
+  const banner = document.getElementById('pwa-install-banner');
+  const desc = document.getElementById('pwa-banner-desc');
+  const installBtn = document.getElementById('pwa-install-btn');
+  const closeBtn = document.getElementById('pwa-banner-close');
+
+  const ua = navigator.userAgent.toLowerCase();
+  const isKakao = ua.includes('kakaotalk');
+  const isIOS = /iphone|ipad|ipod/.test(ua);
+  const isAndroid = ua.includes('android');
+
+  let deferredPrompt = null;
+
+  closeBtn.addEventListener('click', () => {
+    banner.style.display = 'none';
+  });
+
+  // 1. 카카오톡 인앱 브라우저로 연 경우
+  if (isKakao) {
+    desc.innerHTML = '카톡 화면에서는 앱 설치가 제한됩니다.<br>오른쪽 위/아래 <b>[⋮] → [다른 브라우저로 열기]</b>를 누른 뒤 홈 화면에 추가해 주세요.';
+    banner.style.display = 'block';
+    return;
+  }
+
+  // 2. 갤럭시 / 안드로이드 크롬 원클릭 설치 이벤트 감지
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    desc.textContent = '버튼 한 번으로 전체 화면 전용 앱처럼 바로 설치할 수 있습니다.';
+    installBtn.style.display = 'block';
+    banner.style.display = 'block';
+  });
+
+  installBtn.addEventListener('click', async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === 'accepted') {
+      banner.style.display = 'none';
+    }
+    deferredPrompt = null;
+  });
+
+  // 3. 아이폰 Safari 안내
+  if (isIOS) {
+    desc.innerHTML = 'Safari 하단 가운데 <b>[공유(□↑)]</b> 버튼을 누르고 아래로 내려 <b>[홈 화면에 추가]</b>를 선택해 주세요.';
+    banner.style.display = 'block';
+    return;
+  }
+
+  // 4. 삼성 인터넷 등 기본 수동 안내 (beforeinstallprompt 미발생 시)
+  if (isAndroid) {
+    setTimeout(() => {
+      if (banner.style.display === 'none') {
+        desc.innerHTML = '브라우저 메뉴(<b>⋮</b> 또는 <b>≡</b>)를 누른 뒤 <b>[홈 화면에 추가]</b> 또는 <b>[현재 페이지 추가]</b>를 선택해 주세요.';
+        banner.style.display = 'block';
+      }
+    }, 1500);
+  }
+})();
+</script>
+<!-- ▲ 스마트 앱 설치 안내 배너 끝 ▲ -->
 </body>
+  
 </html>
