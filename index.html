@@ -1094,9 +1094,9 @@
 })();
 </script>
 <!-- ▲ 스마트 앱 설치 안내 배너 끝 ▲ -->
-  <!-- ▼ 노이즈 소멸 모션 & 움직이는 '틀림/제거' 아이콘 스크립트 시작 ▼ -->
+<!-- ▼ 노이즈 제거 배지 모션 스크립트 (노이즈 본문 텍스트 유지) 시작 ▼ -->
 <style>
-  /* 1. '틀렸음 / 노이즈 제거됨' 움직이는 아이콘 모션 */
+  /* '틀렸음 / 제거할 노이즈' 움직이는 ❌ 배지 모션 */
   .sv-wrong-badge {
     display: inline-flex;
     align-items: center;
@@ -1117,7 +1117,6 @@
     user-select: none;
   }
 
-  /* 헤더 제목 전용 ❌ 배지 (살짝 더 또렷하게 표시) */
   .sv-wrong-badge--header {
     margin-left: 6px;
     margin-right: 4px;
@@ -1145,49 +1144,9 @@
     }
   }
 
-  /* 2. 가로 취소선 대신 서서히 흐려지며 녹아내리듯 사라지는 글자 모션 */
-  .sv-noise-dissolve {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    text-decoration: none !important;
-    color: #fca5a5;
-    animation: svTextDissolve 2.8s ease-in-out infinite;
-  }
-
-  @keyframes svTextDissolve {
-    0% {
-      opacity: 0.95;
-      filter: blur(0px);
-      transform: translateY(0px);
-      letter-spacing: 0px;
-    }
-    45% {
-      opacity: 0.72;
-      filter: blur(0.4px);
-      transform: translateY(-1px);
-      letter-spacing: 0.2px;
-    }
-    80% {
-      opacity: 0.22;
-      filter: blur(2.2px);
-      transform: translateY(-4px);
-      letter-spacing: 0.8px;
-    }
-    100% {
-      opacity: 0.08;
-      filter: blur(3px);
-      transform: translateY(-6px);
-      letter-spacing: 1px;
-    }
-  }
-
   @media (prefers-reduced-motion: reduce) {
-    .sv-wrong-badge,
-    .sv-noise-dissolve {
+    .sv-wrong-badge {
       animation: none !important;
-      opacity: 0.75;
     }
   }
 </style>
@@ -1197,112 +1156,45 @@
   function createWrongBadge(isHeader) {
     const badge = document.createElement('span');
     badge.className = 'sv-wrong-badge' + (isHeader ? ' sv-wrong-badge--header' : '');
-    badge.setAttribute('aria-label', '틀린 노이즈 감지됨');
-    badge.title = '잘못된/불필요한 노이즈';
+    badge.setAttribute('aria-label', '제거할 노이즈 표시');
+    badge.title = '제거할 노이즈';
     badge.textContent = '❌';
     return badge;
   }
 
-  function applyDissolveToNode(el) {
-    if (!el || el.dataset.svNoiseApplied === 'true' || el.dataset.svHeaderApplied === 'true') return;
-
-    // 기존 취소선(line-through) 제거
-    el.style.textDecoration = 'none';
-    const lineThroughChildren = el.querySelectorAll('[style*="line-through"], del, s');
-    lineThroughChildren.forEach((child) => {
-      child.style.textDecoration = 'none';
-    });
-
-    el.classList.add('sv-noise-dissolve');
-    el.prepend(createWrongBadge(false));
-    el.dataset.svNoiseApplied = 'true';
-  }
-
-  function applyHeaderBadge(headerEl) {
-    if (!headerEl || headerEl.dataset.svHeaderApplied === 'true') return;
-    // 제목 텍스트는 사라지지 않도록 유지하고 옆에 움직이는 ❌ 아이콘만 부착
-    headerEl.appendChild(createWrongBadge(true));
-    headerEl.dataset.svHeaderApplied = 'true';
-  }
-
-  function enhanceNoiseElements() {
-    // 1) 'DETECTED NOISE (제거된 추측)' 헤더 제목 옆에 움직이는 ❌ 아이콘 추가
-    const textNodes = document.querySelectorAll('h1, h2, h3, h4, h5, h6, p, span, div, strong, label');
-    textNodes.forEach((el) => {
+  function applyNoiseBadges() {
+    const nodes = document.querySelectorAll('h1, h2, h3, h4, h5, h6, p, span, div, strong, label');
+    nodes.forEach((el) => {
+      if (el.dataset.svBadgeApplied === 'true') return;
       if (el.children.length > 2) return;
-      const t = (el.textContent || '').trim();
-      if (!t || t.length > 50) return;
 
-      const isDetectedNoiseHeader =
-        /detected noise/i.test(t) ||
-        t.includes('제거된 추측');
+      const text = (el.textContent || '').trim();
+      if (!text || text.length > 60) return;
 
-      if (isDetectedNoiseHeader) {
-        applyHeaderBadge(el);
-      }
-    });
+      const isDetectedNoiseHeader = /detected noise/i.test(text) || text.includes('제거된 추측');
+      const isRemoveNoiseHeader = text.includes('제거할 노이즈');
 
-    // 2) 기존 취소선(line-through)이나 del/s 태그가 걸린 노이즈 항목을 소멸 모션으로 변환
-    const candidates = document.querySelectorAll('del, s, [style*="line-through"], [class*="noise"], [data-noise]');
-    candidates.forEach((el) => {
-      if (el.dataset.svHeaderApplied === 'true') return;
-      const t = (el.textContent || '').trim();
-      if (!t) return;
-      if (/detected noise/i.test(t) && t.length <= 50) return;
-
-      const styleDecor = getComputedStyle(el).textDecorationLine || '';
-      const isStruck =
-        el.tagName === 'DEL' ||
-        el.tagName === 'S' ||
-        styleDecor.includes('line-through') ||
-        (el.getAttribute('style') || '').includes('line-through');
-      const isNoiseClass =
-        (el.className || '').toString().toLowerCase().includes('noise') ||
-        el.hasAttribute('data-noise');
-
-      if (isStruck || isNoiseClass) {
-        applyDissolveToNode(el);
-      }
-    });
-
-    // 3) 확대/상세 화면의 'DETECTED NOISE (제거된 추측)' 블록 내부 노이즈 항목 처리
-    const containers = document.querySelectorAll('div, section, article, li');
-    containers.forEach((block) => {
-      const directText = block.textContent || '';
-      if (directText.includes('DETECTED NOISE') || directText.includes('제거된 추측')) {
-        const items = block.querySelectorAll('span, p, div, li, strong, em');
-        items.forEach((item) => {
-          if (item.children.length > 2) return;
-          if (item.dataset.svHeaderApplied === 'true') return;
-          const t = (item.textContent || '').trim();
-          if (!t) return;
-
-          const isHeaderOnly = /detected noise|제거된 추측/i.test(t) && t.length <= 50;
-          if (isHeaderOnly) return;
-
-          if (t.includes('노이즈') || t.includes('추측') || t.includes('잡음') || t.toLowerCase().includes('noise')) {
-            applyDissolveToNode(item);
-          }
-        });
+      if (isDetectedNoiseHeader || isRemoveNoiseHeader) {
+        // 기존 정적 ❌ 문자가 중복으로 붙어있는 경우 중복 방지 처리만 하고 모션 배지 추가
+        el.appendChild(createWrongBadge(true));
+        el.dataset.svBadgeApplied = 'true';
       }
     });
   }
 
-  enhanceNoiseElements();
+  applyNoiseBadges();
 
   const observer = new MutationObserver(() => {
-    enhanceNoiseElements();
+    applyNoiseBadges();
   });
 
   observer.observe(document.body, {
     childList: true,
-    subtree: true,
-    attributes: true,
-    attributeFilter: ['style', 'class']
+    subtree: true
   });
 })();
 </script>
-<!-- ▲ 노이즈 소멸 모션 & 움직이는 '틀림/제거' 아이콘 스크립트 끝 ▲ -->
+<!-- ▲ 노이즈 제거 배지 모션 스크립트 끝 ▲ -->
 </body>
   
 </html>
