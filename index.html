@@ -6,549 +6,91 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="theme-color" content="#0f172a" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
   <title>STAGE VOICE PRO | 스피치 컨디션 트레이닝</title>
   <style>
-    :root {
-      --bg-main: #0f172a;
-      --bg-card: #1e293b;
-      --bg-input: #0b1120;
-      --accent: #38bdf8;
-      --accent-glow: rgba(56, 189, 248, 0.25);
-      --purple: #a78bfa;
-      --text-primary: #f8fafc;
-      --text-secondary: #94a3b8;
-      --border: #334155;
-      --success: #34d399;
-      --danger: #f87171;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Segoe UI", Roboto, sans-serif;
-      background-color: var(--bg-main);
-      color: var(--text-primary);
-      line-height: 1.5;
-      display: flex;
-      justify-content: center;
-      min-height: 100vh;
-      padding: env(safe-area-inset-top) 16px calc(28px + env(safe-area-inset-bottom)) 16px;
-    }
-
-    .app-container {
-      width: 100%;
-      max-width: 460px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      padding-top: 16px;
-    }
-
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding-bottom: 8px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .brand h1 {
-      font-size: 18px;
-      font-weight: 700;
-      letter-spacing: 0.5px;
-    }
-
-    .brand span {
-      font-size: 12px;
-      color: var(--accent);
-      font-weight: 500;
-    }
-
-    .privacy-badge {
-      font-size: 11px;
-      color: var(--text-secondary);
-      background: var(--bg-card);
-      padding: 4px 10px;
-      border-radius: 999px;
-      border: 1px solid var(--border);
-    }
-
-    .tabs {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 6px;
-      background: var(--bg-card);
-      padding: 5px;
-      border-radius: 12px;
-      border: 1px solid var(--border);
-    }
-
-    .tab-btn {
-      background: transparent;
-      border: none;
-      color: var(--text-secondary);
-      font-size: 13px;
-      font-weight: 600;
-      padding: 10px 4px;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-
-    .tab-btn.active {
-      background: var(--accent);
-      color: #0f172a;
-    }
-
-    .panel {
-      display: none;
-      flex-direction: column;
-      gap: 16px;
-      animation: fadeIn 0.25s ease;
-    }
-
-    .panel.active {
-      display: flex;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(4px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 20px;
-    }
-
-    .card-title {
-      font-size: 15px;
-      font-weight: 700;
-      margin-bottom: 6px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .card-desc {
-      font-size: 13px;
-      color: var(--text-secondary);
-      margin-bottom: 16px;
-      word-break: keep-all;
-    }
-
-    /* 1. 호흡 타이머 UI */
-    .breath-stage {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 24px 0;
-    }
-
-    .breath-circle {
-      width: 160px;
-      height: 160px;
-      border-radius: 50%;
-      background: radial-gradient(circle, var(--accent-glow) 0%, rgba(15, 23, 42, 0.8) 75%);
-      border: 2px solid var(--accent);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      transition: transform 1s ease-in-out;
-      box-shadow: 0 0 24px var(--accent-glow);
-    }
-
-    .breath-phase {
-      font-size: 15px;
-      font-weight: 700;
-      text-align: center;
-    }
-
-    .breath-timer {
-      font-size: 28px;
-      font-weight: 800;
-      color: var(--accent);
-      margin-top: 4px;
-    }
-
-    .cycle-info {
-      margin-top: 18px;
-      font-size: 12px;
-      color: var(--text-secondary);
-      text-align: center;
-    }
-
-    .primary-btn {
-      width: 100%;
-      padding: 14px;
-      border-radius: 12px;
-      border: none;
-      background: var(--accent);
-      color: #0f172a;
-      font-size: 15px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: opacity 0.2s;
-    }
-
-    .primary-btn:active {
-      opacity: 0.85;
-    }
-
-    .secondary-btn {
-      width: 100%;
-      padding: 12px;
-      border-radius: 12px;
-      border: 1px solid var(--border);
-      background: transparent;
-      color: var(--text-secondary);
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      margin-top: 8px;
-    }
-
-    /* 2. 인터랙티브 보이스 튜닝 스튜디오 */
-    .step-pills {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 6px;
-      margin-bottom: 16px;
-    }
-
-    .step-pill {
-      background: var(--bg-input);
-      border: 1px solid var(--border);
-      color: var(--text-secondary);
-      padding: 8px 4px;
-      border-radius: 8px;
-      font-size: 12px;
-      font-weight: 600;
-      text-align: center;
-      cursor: pointer;
-    }
-
-    .step-pill.active {
-      border-color: var(--purple);
-      color: var(--purple);
-      background: rgba(167, 139, 250, 0.12);
-    }
-
-    .tuning-stage {
-      background: var(--bg-input);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 20px 16px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-      margin-bottom: 14px;
-    }
-
-    .wave-bars {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      height: 64px;
-      margin: 12px 0;
-    }
-
-    .wave-bar {
-      width: 6px;
-      height: 16px;
-      background: var(--purple);
-      border-radius: 99px;
-      transition: height 0.15s ease;
-    }
-
-    .wave-bars.animating .wave-bar {
-      animation: pulseWave 0.9s infinite ease-in-out alternate;
-    }
-
+    :root { --bg-main: #0f172a; --bg-card: #1e293b; --bg-input: #0b1120; --accent: #38bdf8; --accent-glow: rgba(56, 189, 248, 0.25); --purple: #a78bfa; --text-primary: #f8fafc; --text-secondary: #94a3b8; --border: #334155; --success: #34d399; --danger: #f87171; --gold: #fbbf24; }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Segoe UI", Roboto, sans-serif; background-color: var(--bg-main); color: var(--text-primary); line-height: 1.5; display: flex; justify-content: center; min-height: 100vh; padding: env(safe-area-inset-top) 16px calc(28px + env(safe-area-inset-bottom)) 16px; }
+    .app-container { width: 100%; max-width: 460px; display: flex; flex-direction: column; gap: 16px; padding-top: 16px; }
+    header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+    .brand h1 { font-size: 18px; font-weight: 700; letter-spacing: 0.5px; }
+    .brand span { font-size: 12px; color: var(--accent); font-weight: 500; }
+    .privacy-badge { font-size: 11px; color: var(--text-secondary); background: var(--bg-card); padding: 4px 10px; border-radius: 999px; border: 1px solid var(--border); }
+    .tabs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; background: var(--bg-card); padding: 5px; border-radius: 12px; border: 1px solid var(--border); }
+    .tab-btn { background: transparent; border: none; color: var(--text-secondary); font-size: 12px; font-weight: 600; padding: 10px 2px; border-radius: 8px; cursor: pointer; transition: all 0.2s ease; white-space: nowrap; }
+    .tab-btn.active { background: var(--accent); color: #0f172a; }
+    .panel { display: none; flex-direction: column; gap: 16px; animation: fadeIn 0.25s ease; }
+    .panel.active { display: flex; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+    .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 20px; }
+    .card-title { font-size: 15px; font-weight: 700; margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between; }
+    .card-desc { font-size: 13px; color: var(--text-secondary); margin-bottom: 16px; word-break: keep-all; }
+    .breath-stage { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px 0; }
+    .breath-circle { width: 160px; height: 160px; border-radius: 50%; background: radial-gradient(circle, var(--accent-glow) 0%, rgba(15, 23, 42, 0.8) 75%); border: 2px solid var(--accent); display: flex; flex-direction: column; align-items: center; justify-content: center; transition: transform 1s ease-in-out; box-shadow: 0 0 24px var(--accent-glow); }
+    .breath-phase { font-size: 15px; font-weight: 700; text-align: center; }
+    .breath-timer { font-size: 28px; font-weight: 800; color: var(--accent); margin-top: 4px; }
+    .cycle-info { margin-top: 18px; font-size: 12px; color: var(--text-secondary); text-align: center; }
+    .primary-btn { width: 100%; padding: 14px; border-radius: 12px; border: none; background: var(--accent); color: #0f172a; font-size: 15px; font-weight: 700; cursor: pointer; transition: opacity 0.2s; }
+    .primary-btn:active { opacity: 0.85; }
+    .secondary-btn { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid var(--border); background: transparent; color: var(--text-secondary); font-size: 13px; font-weight: 600; cursor: pointer; margin-top: 8px; }
+    .step-pills { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 16px; }
+    .step-pill { background: var(--bg-input); border: 1px solid var(--border); color: var(--text-secondary); padding: 8px 4px; border-radius: 8px; font-size: 12px; font-weight: 600; text-align: center; cursor: pointer; }
+    .step-pill.active { border-color: var(--purple); color: var(--purple); background: rgba(167, 139, 250, 0.12); }
+    .tuning-stage { background: var(--bg-input); border: 1px solid var(--border); border-radius: 14px; padding: 20px 16px; display: flex; flex-direction: column; align-items: center; text-align: center; margin-bottom: 14px; }
+    .wave-bars { display: flex; align-items: center; justify-content: center; gap: 6px; height: 64px; margin: 12px 0; }
+    .wave-bar { width: 6px; height: 16px; background: var(--purple); border-radius: 99px; transition: height 0.15s ease; }
+    .wave-bars.animating .wave-bar { animation: pulseWave 0.9s infinite ease-in-out alternate; }
     .wave-bars.animating .wave-bar:nth-child(2) { animation-delay: 0.15s; }
     .wave-bars.animating .wave-bar:nth-child(3) { animation-delay: 0.3s; }
     .wave-bars.animating .wave-bar:nth-child(4) { animation-delay: 0.45s; }
     .wave-bars.animating .wave-bar:nth-child(5) { animation-delay: 0.3s; }
     .wave-bars.animating .wave-bar:nth-child(6) { animation-delay: 0.15s; }
     .wave-bars.animating .wave-bar:nth-child(7) { animation-delay: 0s; }
-
-    @keyframes pulseWave {
-      0% { height: 14px; opacity: 0.5; }
-      100% { height: 54px; opacity: 1; }
-    }
-
-    .tuning-timer-num {
-      font-size: 26px;
-      font-weight: 800;
-      color: var(--purple);
-      margin-bottom: 6px;
-    }
-
-    .tuning-guide {
-      font-size: 13px;
-      color: var(--text-secondary);
-      line-height: 1.5;
-      word-break: keep-all;
-    }
-
-    .prompter-meta {
-      width: 100%;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 11px;
-      color: var(--accent);
-      margin-top: 10px;
-      padding: 0 2px;
-    }
-
-    .prompter-box {
-      width: 100%;
-      background: rgba(56, 189, 248, 0.08);
-      border: 1px dashed var(--accent);
-      border-radius: 10px;
-      padding: 16px 14px;
-      font-size: 15px;
-      font-weight: 600;
-      color: var(--text-primary);
-      line-height: 1.65;
-      word-break: keep-all;
-      margin: 6px 0 10px 0;
-      min-height: 82px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .mic-meter-wrap {
-      width: 100%;
-      height: 14px;
-      background: #0f172a;
-      border-radius: 999px;
-      overflow: hidden;
-      border: 1px solid var(--border);
-      margin: 10px 0 6px 0;
-    }
-
-    .mic-meter-fill {
-      height: 100%;
-      width: 0%;
-      background: linear-gradient(90deg, var(--accent), var(--success));
-      transition: width 0.08s ease-out;
-    }
-
-    .mic-status-text {
-      font-size: 12px;
-      color: var(--text-secondary);
-    }
-
-    .mini-btn {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      color: var(--text-primary);
-      font-size: 12px;
-      padding: 7px 14px;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-
-    /* 3. 노이즈 리셋 (10가지 상황 프리셋 & 리셋 연출) */
-    .strategy-banner {
-      background: rgba(56, 189, 248, 0.08);
-      border-left: 3px solid var(--accent);
-      padding: 10px 12px;
-      border-radius: 0 8px 8px 0;
-      font-size: 12px;
-      color: var(--text-secondary);
-      margin-bottom: 16px;
-      line-height: 1.5;
-      word-break: keep-all;
-    }
-
-    .strategy-banner b {
-      color: var(--text-primary);
-    }
-
-    .preset-label {
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--accent);
-      margin-bottom: 8px;
-      display: block;
-    }
-
-    .preset-grid {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-bottom: 18px;
-    }
-
-    .preset-chip {
-      background: var(--bg-input);
-      border: 1px solid var(--border);
-      color: var(--text-secondary);
-      font-size: 12px;
-      padding: 7px 10px;
-      border-radius: 999px;
-      cursor: pointer;
-      transition: all 0.15s ease;
-    }
-
-    .preset-chip:hover, .preset-chip.selected {
-      background: rgba(56, 189, 248, 0.16);
-      border-color: var(--accent);
-      color: var(--text-primary);
-      font-weight: 600;
-    }
-
-    .form-group {
-      display: flex;
-      flex-direction: column;
-      gap: 7px;
-      margin-bottom: 14px;
-      transition: opacity 0.4s ease, transform 0.4s ease;
-    }
-
-    .form-group.shredded {
-      opacity: 0.25;
-      text-decoration: line-through;
-    }
-
-    .form-group label {
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--text-secondary);
-    }
-
-    .form-group.noise-box label {
-      color: var(--danger);
-    }
-
-    .form-group.signal-box label {
-      color: var(--success);
-    }
-
-    textarea, input[type="text"] {
-      width: 100%;
-      background: var(--bg-input);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 11px 12px;
-      color: var(--text-primary);
-      font-size: 16px; /* iOS 자동 확대 방지 */
-      font-family: inherit;
-      resize: none;
-    }
-
-    textarea:focus, input[type="text"]:focus {
-      outline: none;
-      border-color: var(--accent);
-    }
-
-    /* 리셋 완료 결과 카드 */
-    .signal-result-card {
-      display: none;
-      background: linear-gradient(145deg, rgba(52, 211, 153, 0.14), rgba(15, 23, 42, 0.95));
-      border: 1px solid var(--success);
-      border-radius: 14px;
-      padding: 18px;
-      margin-top: 14px;
-      text-align: center;
-      animation: fadeIn 0.3s ease;
-    }
-
-    .signal-result-tag {
-      font-size: 11px;
-      font-weight: 700;
-      color: var(--success);
-      letter-spacing: 0.5px;
-      margin-bottom: 6px;
-    }
-
-    .signal-result-text {
-      font-size: 16px;
-      font-weight: 700;
-      color: var(--text-primary);
-      line-height: 1.5;
-      word-break: keep-all;
-    }
-
-    /* 누적 리셋 로그 리스트 */
-    .log-section {
-      margin-top: 8px;
-    }
-
-    .log-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--text-secondary);
-      margin-bottom: 10px;
-    }
-
-    .log-list {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .log-item {
-      background: var(--bg-input);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 12px;
-      font-size: 12px;
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 10px;
-    }
-
-    .log-item-content {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .log-date {
-      font-size: 11px;
-      color: var(--text-secondary);
-    }
-
-    .log-noise-strike {
-      color: var(--text-secondary);
-      text-decoration: line-through;
-      font-size: 11px;
-    }
-
-    .log-action-bold {
-      color: var(--success);
-      font-weight: 600;
-      font-size: 13px;
-    }
-
-    .del-log-btn {
-      background: transparent;
-      border: none;
-      color: var(--text-secondary);
-      font-size: 14px;
-      cursor: pointer;
-      padding: 2px 6px;
-    }
+    @keyframes pulseWave { 0% { height: 14px; opacity: 0.5; } 100% { height: 54px; opacity: 1; } }
+    .tuning-timer-num { font-size: 26px; font-weight: 800; color: var(--purple); margin-bottom: 6px; }
+    .tuning-guide { font-size: 13px; color: var(--text-secondary); line-height: 1.5; word-break: keep-all; }
+    .prompter-meta { width: 100%; display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: var(--accent); margin-top: 10px; padding: 0 2px; }
+    .prompter-box { width: 100%; background: rgba(56, 189, 248, 0.08); border: 1px dashed var(--accent); border-radius: 10px; padding: 16px 14px; font-size: 15px; font-weight: 600; color: var(--text-primary); line-height: 1.65; word-break: keep-all; margin: 6px 0 10px 0; min-height: 82px; display: flex; align-items: center; justify-content: center; }
+    .mic-meter-wrap { width: 100%; height: 14px; background: #0f172a; border-radius: 999px; overflow: hidden; border: 1px solid var(--border); margin: 10px 0 6px 0; }
+    .mic-meter-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent), var(--success)); transition: width 0.08s ease-out; }
+    .mic-status-text { font-size: 12px; color: var(--text-secondary); }
+    .mini-btn { background: var(--bg-card); border: 1px solid var(--border); color: var(--text-primary); font-size: 12px; padding: 7px 14px; border-radius: 8px; cursor: pointer; }
+    .strategy-banner { background: rgba(56, 189, 248, 0.08); border-left: 3px solid var(--accent); padding: 10px 12px; border-radius: 0 8px 8px 0; font-size: 12px; color: var(--text-secondary); margin-bottom: 16px; line-height: 1.5; word-break: keep-all; }
+    .strategy-banner b { color: var(--text-primary); }
+    .preset-label { font-size: 12px; font-weight: 700; color: var(--accent); margin-bottom: 8px; display: block; }
+    .preset-grid { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 18px; }
+    .preset-chip { background: var(--bg-input); border: 1px solid var(--border); color: var(--text-secondary); font-size: 12px; padding: 7px 10px; border-radius: 999px; cursor: pointer; transition: all 0.15s ease; }
+    .preset-chip:hover, .preset-chip.selected { background: rgba(56, 189, 248, 0.16); border-color: var(--accent); color: var(--text-primary); font-weight: 600; }
+    .form-group { display: flex; flex-direction: column; gap: 7px; margin-bottom: 14px; transition: opacity 0.4s ease; }
+    .form-group.shredded { opacity: 0.25; text-decoration: line-through; }
+    .form-group label { font-size: 12px; font-weight: 700; color: var(--text-secondary); }
+    .form-group.noise-box label { color: var(--danger); }
+    .form-group.signal-box label { color: var(--success); }
+    textarea, input[type="text"] { width: 100%; background: var(--bg-input); border: 1px solid var(--border); border-radius: 10px; padding: 11px 12px; color: var(--text-primary); font-size: 16px; font-family: inherit; resize: none; }
+    textarea:focus, input[type="text"]:focus { outline: none; border-color: var(--accent); }
+    .signal-result-card { display: none; background: linear-gradient(145deg, rgba(52, 211, 153, 0.14), rgba(15, 23, 42, 0.95)); border: 1px solid var(--success); border-radius: 14px; padding: 18px; margin-top: 14px; text-align: center; animation: fadeIn 0.3s ease; }
+    .signal-result-tag { font-size: 11px; font-weight: 700; color: var(--success); letter-spacing: 0.5px; margin-bottom: 6px; }
+    .signal-result-text { font-size: 16px; font-weight: 700; color: var(--text-primary); line-height: 1.5; word-break: keep-all; margin-bottom: 12px; }
+    .view-log-jump-btn { background: rgba(52, 211, 153, 0.2); border: 1px solid var(--success); color: var(--success); font-size: 12px; font-weight: 700; padding: 8px 14px; border-radius: 8px; cursor: pointer; }
+    .stats-bar { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+    .stat-box { background: var(--bg-input); border: 1px solid var(--border); border-radius: 12px; padding: 14px; text-align: center; }
+    .stat-num { font-size: 22px; font-weight: 800; color: var(--accent); }
+    .stat-num.win { color: var(--gold); }
+    .stat-label { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+    .log-list { display: flex; flex-direction: column; gap: 10px; }
+    .log-item { background: var(--bg-input); border: 1px solid var(--border); border-radius: 12px; padding: 14px; font-size: 12px; display: flex; flex-direction: column; gap: 8px; transition: border-color 0.2s; }
+    .log-item.verified-win { border-color: var(--gold); background: linear-gradient(145deg, rgba(251, 191, 36, 0.08), var(--bg-input)); }
+    .log-top-row { display: flex; justify-content: space-between; align-items: center; }
+    .log-date { font-size: 11px; color: var(--text-secondary); }
+    .log-noise-strike { color: var(--text-secondary); text-decoration: line-through; font-size: 12px; }
+    .log-action-bold { color: var(--success); font-weight: 700; font-size: 14px; line-height: 1.45; word-break: keep-all; }
+    .log-bottom-row { display: flex; justify-content: space-between; align-items: center; padding-top: 6px; border-top: 1px solid rgba(51, 65, 85, 0.5); }
+    .win-toggle-btn { background: rgba(251, 191, 36, 0.12); border: 1px solid rgba(251, 191, 36, 0.4); color: var(--gold); font-size: 11px; font-weight: 700; padding: 5px 10px; border-radius: 999px; cursor: pointer; }
+    .win-toggle-btn.active { background: var(--gold); color: #0f172a; border-color: var(--gold); }
+    .del-log-btn { background: transparent; border: none; color: var(--text-secondary); font-size: 12px; cursor: pointer; padding: 4px 6px; }
   </style>
 </head>
 <body>
@@ -562,17 +104,16 @@
     </header>
 
     <nav class="tabs">
-      <button class="tab-btn active" onclick="switchTab('breath', this)">1. 호흡 밸런스</button>
-      <button class="tab-btn" onclick="switchTab('voice', this)">2. 보이스 튜닝</button>
-      <button class="tab-btn" onclick="switchTab('reset', this)">3. 노이즈 리셋</button>
+      <button id="tab-breath" class="tab-btn active" onclick="switchTab('breath', this)">1. 호흡 밸런스</button>
+      <button id="tab-voice" class="tab-btn" onclick="switchTab('voice', this)">2. 보이스 튜닝</button>
+      <button id="tab-reset" class="tab-btn" onclick="switchTab('reset', this)">3. 노이즈 리셋</button>
+      <button id="tab-logs" class="tab-btn" onclick="switchTab('logs', this)">4. 리셋 로그</button>
     </nav>
 
-    <!-- 패널 1: 생리학적 한숨 타이머 -->
     <section id="panel-breath" class="panel active">
       <div class="card">
         <div class="card-title">횡격막 & 신경계 리셋 호흡</div>
         <div class="card-desc">말하기 전 목이 잠기거나 텐션이 올라갈 때 3세트만 실행해 발성 호흡을 안정시킵니다.</div>
-        
         <div class="breath-stage">
           <div id="breathCircle" class="breath-circle">
             <div id="breathPhase" class="breath-phase">준비</div>
@@ -580,82 +121,65 @@
           </div>
           <div class="cycle-info">코 들이마시기(4초) → 추가 흡입(1.5초) → 길게 내쉬기(6초)</div>
         </div>
-
         <button id="breathStartBtn" class="primary-btn" onclick="toggleBreath()">호흡 루틴 시작 (약 35초)</button>
       </div>
     </section>
 
-    <!-- 패널 2: 인터랙티브 보이스 튜닝 -->
     <section id="panel-voice" class="panel">
       <div class="card">
-        <div class="card-title">
-          <span>인터랙티브 보이스 튜닝</span>
-          <span style="font-size: 12px; color: var(--purple);">3-Step Studio</span>
-        </div>
+        <div class="card-title"><span>인터랙티브 보이스 튜닝</span><span style="font-size: 12px; color: var(--purple);">3-Step Studio</span></div>
         <div class="card-desc">단계별 비주얼 가이드와 실시간 성량 미터로 본래 목소리 톤을 끌어올립니다.</div>
-
         <div class="step-pills">
           <div id="pill-1" class="step-pill active" onclick="selectTuningStep(1)">STEP 1. 공명</div>
           <div id="pill-2" class="step-pill" onclick="selectTuningStep(2)">STEP 2. 이완</div>
           <div id="pill-3" class="step-pill" onclick="selectTuningStep(3)">STEP 3. 실전발성</div>
         </div>
 
-        <!-- STEP 1 -->
         <div id="tuning-view-1" class="tuning-stage">
-          <div style="font-size: 14px; font-weight: 700; color: var(--text-primary);">저음 허밍 공명 (15초)</div>
+          <div style="font-size: 14px; font-weight: 700;">저음 허밍 공명 (15초)</div>
           <div id="waveBars1" class="wave-bars">
-            <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
-            <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
-            <div class="wave-bar"></div>
+            <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
           </div>
           <div id="timer-step1" class="tuning-timer-num">15.0s</div>
-          <div class="tuning-guide">입술을 가볍게 다물고 가장 편한 낮은 음으로 <b>"음~"</b> 소리를 내며 입술 주변의 진동을 유지하세요.</div>
+          <div class="tuning-guide">입술을 가볍게 다물고 가장 편한 낮은 음으로 <b>"음~"</b> 소리를 내며 입술 주변 진동을 유지하세요.</div>
           <button id="btn-step1" class="primary-btn" style="margin-top: 16px; background: var(--purple);" onclick="runStep1Timer()">15초 허밍 타이머 시작</button>
         </div>
 
-        <!-- STEP 2 -->
         <div id="tuning-view-2" class="tuning-stage" style="display: none;">
-          <div style="font-size: 14px; font-weight: 700; color: var(--text-primary);">턱관절 & 후두 이완 (10초)</div>
+          <div style="font-size: 14px; font-weight: 700;">턱관절 & 후두 이완 (10초)</div>
           <div id="jawCircle" style="width: 72px; height: 72px; border-radius: 50%; border: 3px solid var(--purple); margin: 16px 0; display: flex; align-items: center; justify-content: center; transition: transform 1.2s ease-in-out; font-size: 12px; color: var(--purple); font-weight: 700;">RELAX</div>
           <div id="timer-step2" class="tuning-timer-num">10.0s</div>
           <div class="tuning-guide">하품하듯 입안 공간을 크게 열었다가 힘을 빼고 어금니 사이를 살짝 띄워 성대 긴장을 풉니다.</div>
           <button id="btn-step2" class="primary-btn" style="margin-top: 16px; background: var(--purple);" onclick="runStep2Timer()">10초 이완 가이드 시작</button>
         </div>
 
-        <!-- STEP 3 -->
         <div id="tuning-view-3" class="tuning-stage" style="display: none;">
-          <div style="font-size: 14px; font-weight: 700; color: var(--text-primary);">첫 문장 앵커링 & 성량 체크</div>
+          <div style="font-size: 14px; font-weight: 700;">첫 문장 앵커링 & 성량 체크</div>
           <div class="prompter-meta">
             <span id="promptBadge">📅 오늘의 추천 문장</span>
             <span id="promptIndexLabel">1 / 50</span>
           </div>
           <div id="prompterText" class="prompter-box"></div>
           <button class="mini-btn" onclick="nextRandomPrompt()">랜덤 예문 뽑기 ↻</button>
-
           <div style="width: 100%; margin-top: 14px; text-align: left;">
             <div style="font-size: 12px; color: var(--text-secondary); display: flex; justify-content: space-between;">
               <span>실시간 보이스 레벨 (녹음 안 됨)</span>
               <span id="dbLabel" style="color: var(--accent);">대기 중</span>
             </div>
-            <div class="mic-meter-wrap">
-              <div id="micMeterFill" class="mic-meter-fill"></div>
-            </div>
+            <div class="mic-meter-wrap"><div id="micMeterFill" class="mic-meter-fill"></div></div>
             <div id="micStatus" class="mic-status-text">버튼을 누르고 위 문장을 평소보다 10% 느리게 읽어보세요.</div>
           </div>
-
           <button id="btn-mic" class="primary-btn" style="margin-top: 14px;" onclick="toggleMicMeter()">마이크 성량 체크 켜기</button>
         </div>
       </div>
     </section>
 
-    <!-- 패널 3: 노이즈 리셋 (10가지 상황 프리셋 & 시각적 소거) -->
     <section id="panel-reset" class="panel">
       <div class="card">
         <div class="card-title">멘탈 디버깅: 추측(노이즈) 지우기</div>
         <div class="strategy-banner">
           <b>핵심 원리:</b> 말이 막히는 이유는 팩트 때문이 아니라 뇌가 만든 <b>'부정적 추측(노이즈)'</b> 때문입니다. 상황을 선택해 추측을 지우고, 내가 실행할 <b>'핵심 행동(시그널)'</b> 1가지만 남기세요.
         </div>
-
         <span class="preset-label">⚡ 지금 겪고 있는 상황을 누르면 자동 분석됩니다 (10가지)</span>
         <div id="presetGrid" class="preset-grid"></div>
 
@@ -663,124 +187,95 @@
           <label>❌ 제거할 노이즈 (머릿속 부정적 추측)</label>
           <textarea id="noiseInput" rows="2" placeholder="위 상황 버튼을 누르거나 직접 입력하세요."></textarea>
         </div>
-
         <div class="form-group">
           <label>🔍 객관적 데이터 점검 (다른 현실적 가능성 3가지)</label>
           <input type="text" id="alt1" placeholder="가능성 1" />
           <input type="text" id="alt2" placeholder="가능성 2" />
           <input type="text" id="alt3" placeholder="가능성 3" />
         </div>
-
         <div class="form-group signal-box">
           <label>✅ 남길 시그널 (내가 통제할 핵심 액션 1가지)</label>
           <input type="text" id="focusAction" placeholder="지금 실행할 행동 한 문장" />
         </div>
-
         <button class="primary-btn" style="background: var(--success);" onclick="executeNoiseReset()">노이즈 지우고 핵심 액션 확정하기</button>
         <button class="secondary-btn" onclick="resetFormInputs()">입력칸 비우기</button>
 
-        <!-- 리셋 완료 시 나타나는 집중 카드 -->
         <div id="signalResultCard" class="signal-result-card">
           <div class="signal-result-tag">✓ NOISE CLEARED · 현재 집중할 시그널</div>
           <div id="signalResultText" class="signal-result-text"></div>
-        </div>
-      </div>
-
-      <!-- 내가 이겨낸 리셋 로그 (기기 내 로컬 누적) -->
-      <div class="card log-section">
-        <div class="log-header">
-          <span>📊 나의 멘탈 리셋 로그 (기기 내 보관)</span>
-          <span id="logCount" style="color: var(--accent);">0건</span>
-        </div>
-        <div id="logList" class="log-list">
-          <div style="font-size: 12px; color: var(--text-secondary); text-align: center; padding: 12px 0;">
-            아직 기록된 로그가 없습니다. 위에서 상황을 선택해 첫 리셋을 실행해 보세요.
-          </div>
+          <button class="view-log-jump-btn" onclick="switchTab('logs', document.getElementById('tab-logs'))">📊 저장된 리셋 로그 확인하기 →</button>
         </div>
       </div>
     </section>
-  </div>
 
+    <section id="panel-logs" class="panel">
+      <div class="card">
+        <div class="card-title">
+          <span>🏆 나의 멘탈 리셋 & 성공 로그</span>
+          <span style="font-size: 11px; color: var(--gold);">기기 내 영구 보관</span>
+        </div>
+        <div class="card-desc">불안한 추측을 지우고 실제로 해냈던 기억들입니다. 말하기 전 긴장될 때 내가 이겨낸 기록을 다시 확인하세요.</div>
+
+        <div class="stats-bar">
+          <div class="stat-box">
+            <div id="totalResetCount" class="stat-num">0회</div>
+            <div class="stat-label">누적 노이즈 리셋</div>
+          </div>
+          <div class="stat-box">
+            <div id="totalWinCount" class="stat-num win">0회</div>
+            <div class="stat-label">실전 성공 체크</div>
+          </div>
+        </div>
+
+        <div id="logList" class="log-list"></div>
+      </div>
+    </section>
+  </div>
   <script>
-    // 탭 전환
     function switchTab(tabName, btnEl) {
       document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
       document.querySelectorAll('.panel').forEach(panel => panel.classList.remove('active'));
-      btnEl.classList.add('active');
+      if (btnEl) btnEl.classList.add('active');
       document.getElementById('panel-' + tabName).classList.add('active');
       if (tabName !== 'voice') stopMicMeter();
+      if (tabName === 'logs') renderLogs();
     }
 
-    // 1. 호흡 밸런스 타이머
-    let breathRunning = false;
-    let countdownInterval = null;
-    const circle = document.getElementById('breathCircle');
-    const phaseText = document.getElementById('breathPhase');
-    const timerText = document.getElementById('breathTimer');
-    const startBtn = document.getElementById('breathStartBtn');
+    let breathRunning = false, countdownInterval = null;
+    const circle = document.getElementById('breathCircle'), phaseText = document.getElementById('breathPhase'), timerText = document.getElementById('breathTimer'), startBtn = document.getElementById('breathStartBtn');
 
-    function toggleBreath() {
-      breathRunning ? stopBreath() : startBreath();
-    }
-
+    function toggleBreath() { breathRunning ? stopBreath() : startBreath(); }
     function stopBreath() {
-      breathRunning = false;
-      clearInterval(countdownInterval);
-      circle.style.transform = 'scale(1)';
-      phaseText.innerText = '준비';
-      timerText.innerText = '3세트';
-      startBtn.innerText = '호흡 루틴 시작 (약 35초)';
-      startBtn.style.background = 'var(--accent)';
+      breathRunning = false; clearInterval(countdownInterval);
+      circle.style.transform = 'scale(1)'; phaseText.innerText = '준비'; timerText.innerText = '3세트';
+      startBtn.innerText = '호흡 루틴 시작 (약 35초)'; startBtn.style.background = 'var(--accent)';
     }
-
     function runCountdown(seconds, label, scaleVal, nextCallback) {
       if (!breathRunning) return;
-      phaseText.innerText = label;
-      circle.style.transform = `scale(${scaleVal})`;
-      let remaining = seconds;
-      timerText.innerText = remaining.toFixed(1) + 's';
-
+      phaseText.innerText = label; circle.style.transform = `scale(${scaleVal})`;
+      let remaining = seconds; timerText.innerText = remaining.toFixed(1) + 's';
       clearInterval(countdownInterval);
       countdownInterval = setInterval(() => {
         remaining -= 0.1;
-        if (remaining <= 0) {
-          clearInterval(countdownInterval);
-          timerText.innerText = '0.0s';
-          if (breathRunning && nextCallback) nextCallback();
-        } else {
-          timerText.innerText = remaining.toFixed(1) + 's';
-        }
+        if (remaining <= 0) { clearInterval(countdownInterval); timerText.innerText = '0.0s'; if (breathRunning && nextCallback) nextCallback(); }
+        else { timerText.innerText = remaining.toFixed(1) + 's'; }
       }, 100);
     }
-
     function startBreath() {
-      breathRunning = true;
-      startBtn.innerText = '중지하기';
-      startBtn.style.background = 'var(--danger)';
-      let currentCycle = 1;
-      const totalCycles = 3;
-
+      breathRunning = true; startBtn.innerText = '중지하기'; startBtn.style.background = 'var(--danger)';
+      let currentCycle = 1, totalCycles = 3;
       function runCycle() {
         if (!breathRunning) return;
-        if (currentCycle > totalCycles) {
-          stopBreath();
-          phaseText.innerText = '컨디션 완료';
-          timerText.innerText = 'READY';
-          return;
-        }
-        runCountdown(4.0, `[${currentCycle}/${totalCycles}] 코로 들이마시기`, 1.22, () => {
-          runCountdown(1.5, `[${currentCycle}/${totalCycles}] 한 번 더 짧게 흡입`, 1.35, () => {
-            runCountdown(6.0, `[${currentCycle}/${totalCycles}] 입으로 길게 내쉬기`, 0.92, () => {
-              currentCycle++;
-              runCycle();
-            });
+        if (currentCycle > totalCycles) { stopBreath(); phaseText.innerText = '컨디션 완료'; timerText.innerText = 'READY'; return; }
+        runCountdown(4.0, `[${currentCycle}/3] 코로 들이마시기`, 1.22, () => {
+          runCountdown(1.5, `[${currentCycle}/3] 한 번 더 짧게 흡입`, 1.35, () => {
+            runCountdown(6.0, `[${currentCycle}/3] 입으로 길게 내쉬기`, 0.92, () => { currentCycle++; runCycle(); });
           });
         });
       }
       runCycle();
     }
 
-    // 2. 인터랙티브 보이스 튜닝 스튜디오
     function selectTuningStep(stepNum) {
       for (let i = 1; i <= 3; i++) {
         document.getElementById('pill-' + i).classList.remove('active');
@@ -794,395 +289,220 @@
     let step1Interval = null;
     function runStep1Timer() {
       clearInterval(step1Interval);
-      const waves = document.getElementById('waveBars1');
-      const timerEl = document.getElementById('timer-step1');
-      const btn = document.getElementById('btn-step1');
-      let rem = 15.0;
-      waves.classList.add('animating');
-      btn.innerText = '허밍 진행 중... ("음~")';
-
+      const waves = document.getElementById('waveBars1'), timerEl = document.getElementById('timer-step1'), btn = document.getElementById('btn-step1');
+      let rem = 15.0; waves.classList.add('animating'); btn.innerText = '허밍 진행 중... ("음~")';
       step1Interval = setInterval(() => {
         rem -= 0.1;
-        if (rem <= 0) {
-          clearInterval(step1Interval);
-          waves.classList.remove('animating');
-          timerEl.innerText = '완료 ✓';
-          btn.innerText = '다시 실행 (15초)';
-          setTimeout(() => selectTuningStep(2), 900);
-        } else {
-          timerEl.innerText = rem.toFixed(1) + 's';
-        }
+        if (rem <= 0) { clearInterval(step1Interval); waves.classList.remove('animating'); timerEl.innerText = '완료 ✓'; btn.innerText = '다시 실행 (15초)'; setTimeout(() => selectTuningStep(2), 900); }
+        else { timerEl.innerText = rem.toFixed(1) + 's'; }
       }, 100);
     }
 
     let step2Interval = null;
     function runStep2Timer() {
       clearInterval(step2Interval);
-      const jaw = document.getElementById('jawCircle');
-      const timerEl = document.getElementById('timer-step2');
-      const btn = document.getElementById('btn-step2');
-      let rem = 10.0;
-      let expand = true;
-      btn.innerText = '턱관절 이완 중...';
-      jaw.style.transform = 'scale(1.35)';
-
+      const jaw = document.getElementById('jawCircle'), timerEl = document.getElementById('timer-step2'), btn = document.getElementById('btn-step2');
+      let rem = 10.0, expand = true; btn.innerText = '턱관절 이완 중...'; jaw.style.transform = 'scale(1.35)';
       step2Interval = setInterval(() => {
         rem -= 0.1;
-        if (Math.round(rem * 10) % 25 === 0) {
-          expand = !expand;
-          jaw.style.transform = expand ? 'scale(1.35)' : 'scale(0.95)';
-        }
-        if (rem <= 0) {
-          clearInterval(step2Interval);
-          jaw.style.transform = 'scale(1)';
-          timerEl.innerText = '완료 ✓';
-          btn.innerText = '다시 실행 (10초)';
-          setTimeout(() => selectTuningStep(3), 900);
-        } else {
-          timerEl.innerText = rem.toFixed(1) + 's';
-        }
+        if (Math.round(rem * 10) % 25 === 0) { expand = !expand; jaw.style.transform = expand ? 'scale(1.35)' : 'scale(0.95)'; }
+        if (rem <= 0) { clearInterval(step2Interval); jaw.style.transform = 'scale(1)'; timerEl.innerText = '완료 ✓'; btn.innerText = '다시 실행 (10초)'; setTimeout(() => selectTuningStep(3), 900); }
+        else { timerEl.innerText = rem.toFixed(1) + 's'; }
       }, 100);
     }
 
-    // 50개 한글 예문
     const samplePrompts = [
-      "\"제 생각에 가장 중요한 핵심은 우리가 지금 집중해야 할 방향을 명확히 하는 것입니다.\"",
-      "\"잠시 숨을 고르고, 제가 준비한 첫 번째 포인트부터 차분하게 말씀드리겠습니다.\"",
-      "\"새로운 기준을 세우는 일은 언제나 낯설지만, 그 과정이 결국 가장 확실한 변화를 만듭니다.\"",
-      "\"오늘 이 자리에서 꼭 전달하고 싶은 한 가지는, 실행이 곧 가장 강력한 증명이라는 사실입니다.\"",
-      "\"복잡한 문제일수록 본질로 돌아가서 가장 단순한 질문부터 다시 던져보아야 합니다.\"",
-      "\"속도보다 중요한 것은 우리가 지금 올바른 방향을 향해 나아가고 있는지 점검하는 일입니다.\"",
-      "\"남들의 시선이나 기준이 아니라, 내가 세운 원칙을 지킬 때 진짜 실력이 쌓입니다.\"",
-      "\"작은 디테일의 차이가 결국 전체의 완성도를 결정짓는 가장 중요한 열쇠가 됩니다.\"",
-      "\"불확실한 상황에서도 흔들리지 않는 힘은 철저한 준비와 명확한 목표에서 나옵니다.\"",
-      "\"지금 당장 완벽할 필요는 없습니다. 어제보다 한 걸음 더 나아가는 것이 핵심입니다.\"",
-      "\"좋은 질문 하나가 수십 가지의 어설픈 해답보다 훨씬 더 큰 돌파구를 열어줍니다.\"",
-      "\"우리가 마주한 한계는 멈추라는 신호가 아니라, 새로운 방식을 찾으라는 신호입니다.\"",
-      "\"자신의 생각을 또렷한 목소리로 전달하는 순간, 비로소 그 아이디어에 생명력이 생깁니다.\"",
-      "\"결과를 바꾸고 싶다면 가장 먼저 매일 반복하는 작은 습관의 구조부터 바꾸어야 합니다.\"",
-      "\"타인의 평가에 에너지를 쏟기보다, 내가 통제할 수 있는 오늘의 과제에 집중하겠습니다.\"",
-      "\"위기의 순간에 드러나는 것은 평소 우리가 얼마나 단단하게 기본기를 다져왔는가입니다.\"",
-      "\"설명하기 어려운 개념일수록 가장 쉬운 언어와 구체적인 사례로 풀어낼 수 있어야 합니다.\"",
-      "\"큰 목표를 이룬 사람들의 공통점은 거창한 계획이 아니라 매일의 꾸준한 실행력입니다.\"",
-      "\"두려움은 우리가 아직 가보지 않은 더 넓은 무대 앞에 서 있다는 가장 확실한 증거입니다.\"",
-      "\"말의 힘은 화려한 수식어가 아니라, 그 안에 담긴 진정성과 명확한 논리에서 나옵니다.\"",
-      "\"스스로를 믿는 태도는 막연한 기대가 아니라, 내가 해낸 작은 성취들의 기록에서 비롯됩니다.\"",
-      "\"지금 이 순간 내 목소리에 집중하며, 준비한 내용을 끝까지 차분하게 전달하겠습니다.\"",
-      "\"문제를 바라보는 관점을 조금만 바꾸면, 전혀 보이지 않던 새로운 선택지가 열립니다.\"",
-      "\"성장은 언제나 익숙한 안전지대를 벗어나 약간은 불편한 도전을 선택할 때 시작됩니다.\"",
-      "\"핵심을 꿰뚫는 한 문장은 길고 복잡한 열 마디의 설명보다 훨씬 깊은 울림을 줍니다.\"",
-      "\"다른 사람과 비교하며 조급해하기보다, 나만의 속도와 리듬을 지키는 것이 가장 현명합니다.\"",
-      "\"어떤 상황에서도 내 중심을 지키는 사람은 외부의 소음에 쉽게 흔들리지 않습니다.\"",
-      "\"오늘 우리가 내리는 작은 결정 하나가 일 년 뒤 완전히 다른 미래를 만들어낼 것입니다.\"",
-      "\"실패를 두려워하지 않는 태도란, 모든 과정을 배움과 데이터로 전환하는 능력을 말합니다.\"",
-      "\"상대방의 마음을 움직이는 가장 확실한 방법은 내 생각을 가장 정직하고 명료하게 전하는 것입니다.\"",
-      "\"높은 기준을 가진 사람일수록 스스로에게 엄격하지만, 그만큼 더 큰 성취를 이루어냅니다.\"",
-      "\"불필요한 긴장을 내려놓고 호흡을 가다듬으면, 본래 내가 가진 실력이 자연스럽게 드러납니다.\"",
-      "\"기회는 준비된 사람에게 찾아오며, 그 기회를 잡는 것은 결국 망설임 없는 첫마디입니다.\"",
-      "\"우리는 모두 각자의 속도로 성장하고 있으며, 지금 이 과정 역시 반드시 필요한 단계입니다.\"",
-      "\"정확한 데이터를 바탕으로 판단하되, 마지막 결단에는 나만의 확신을 담아야 합니다.\"",
-      "\"어려운 과제 앞에서 물러서지 않고 정면으로 마주할 때, 비로소 진짜 자신감이 생깁니다.\"",
-      "\"좋은 커뮤니케이션은 말을 많이 하는 것이 아니라, 꼭 필요한 말을 정확하게 전하는 것입니다.\"",
-      "\"내 안의 가능성을 제한하는 가장 큰 벽은 외부 환경이 아니라 내 머릿속의 고정관념입니다.\"",
-      "\"오늘의 노력이 당장 눈에 보이지 않더라도, 그 시간들은 결코 사라지지 않고 축적됩니다.\"",
-      "\"균형 잡힌 시각으로 전체를 바라볼 때, 부분적인 문제에 휩쓸리지 않을 수 있습니다.\"",
-      "\"목표가 분명한 사람은 주변의 사소한 반응에 일희일비하지 않고 자신의 길을 걸어갑니다.\"",
-      "\"말하기 전에 잠시 멈추어 호흡을 고르는 여유가 전체 발표의 품격을 한 단계 높여줍니다.\"",
-      "\"변화를 주도하는 사람들은 언제나 남들이 당연하게 여기는 것에 새로운 질문을 던집니다.\"",
-      "\"나의 강점을 정확히 이해하고 그것을 극대화하는 전략이 가장 효율적인 성장 방식입니다.\"",
-      "\"어떤 무대에서도 당당할 수 있는 비결은, 내 이야기가 가치가 있다는 스스로의 믿음입니다.\"",
-      "\"복잡한 생각을 글과 말로 정리하는 훈련은, 내 삶을 주도적으로 설계하는 가장 강력한 도구입니다.\"",
-      "\"실수는 과정의 일부일 뿐이며, 중요한 것은 그 다음 순간에 어떤 태도로 다시 일어서는가입니다.\"",
-      "\"차분하고 단단한 목소리는 듣는 사람에게 신뢰를 주고, 말하는 나 자신에게도 안정감을 줍니다.\"",
-      "\"먼 미래의 막연한 걱정보다, 지금 내 눈앞에 있는 이 한 문장을 완성하는 데 집중하겠습니다.\"",
-      "\"준비된 사람은 흔들리지 않습니다. 오늘도 나만의 기준과 목소리로 한 걸음 더 나아갑니다.\""
+      "제 생각에 가장 중요한 핵심은 우리가 지금 집중해야 할 방향을 명확히 하는 것입니다.",
+      "잠시 숨을 고르고, 제가 준비한 첫 번째 포인트부터 차분하게 말씀드리겠습니다.",
+      "새로운 기준을 세우는 일은 언제나 낯설지만, 그 과정이 결국 가장 확실한 변화를 만듭니다.",
+      "오늘 이 자리에서 꼭 전달하고 싶은 한 가지는, 실행이 곧 가장 강력한 증명이라는 사실입니다.",
+      "복잡한 문제일수록 본질로 돌아가서 가장 단순한 질문부터 다시 던져보아야 합니다.",
+      "속도보다 중요한 것은 우리가 지금 올바른 방향을 향해 나아가고 있는지 점검하는 일입니다.",
+      "남들의 시선이나 기준이 아니라, 내가 세운 원칙을 지킬 때 진짜 실력이 쌓입니다.",
+      "작은 디테일의 차이가 결국 전체의 완성도를 결정짓는 가장 중요한 열쇠가 됩니다.",
+      "불확실한 상황에서도 흔들리지 않는 힘은 철저한 준비와 명확한 목표에서 나옵니다.",
+      "지금 당장 완벽할 필요는 없습니다. 어제보다 한 걸음 더 나아가는 것이 핵심입니다.",
+      "좋은 질문 하나가 수십 가지의 어설픈 해답보다 훨씬 더 큰 돌파구를 열어줍니다.",
+      "우리가 마주한 한계는 멈추라는 신호가 아니라, 새로운 방식을 찾으라는 신호입니다.",
+      "자신의 생각을 또렷한 목소리로 전달하는 순간, 비로소 그 아이디어에 생명력이 생깁니다.",
+      "결과를 바꾸고 싶다면 가장 먼저 매일 반복하는 작은 습관의 구조부터 바꾸어야 합니다.",
+      "타인의 평가에 에너지를 쏟기보다, 내가 통제할 수 있는 오늘의 과제에 집중하겠습니다.",
+      "위기의 순간에 드러나는 것은 평소 우리가 얼마나 단단하게 기본기를 다져왔는가입니다.",
+      "설명하기 어려운 개념일수록 가장 쉬운 언어와 구체적인 사례로 풀어낼 수 있어야 합니다.",
+      "큰 목표를 이룬 사람들의 공통점은 거창한 계획이 아니라 매일의 꾸준한 실행력입니다.",
+      "두려움은 우리가 아직 가보지 않은 더 넓은 무대 앞에 서 있다는 가장 확실한 증거입니다.",
+      "말의 힘은 화려한 수식어가 아니라, 그 안에 담긴 진정성과 명확한 논리에서 나옵니다.",
+      "스스로를 믿는 태도는 막연한 기대가 아니라, 내가 해낸 작은 성취들의 기록에서 비롯됩니다.",
+      "지금 이 순간 내 목소리에 집중하며, 준비한 내용을 끝까지 차분하게 전달하겠습니다.",
+      "문제를 바라보는 관점을 조금만 바꾸면, 전혀 보이지 않던 새로운 선택지가 열립니다.",
+      "성장은 언제나 익숙한 안전지대를 벗어나 약간은 불편한 도전을 선택할 때 시작됩니다.",
+      "핵심을 꿰뚫는 한 문장은 길고 복잡한 열 마디의 설명보다 훨씬 깊은 울림을 줍니다.",
+      "다른 사람과 비교하며 조급해하기보다, 나만의 속도와 리듬을 지키는 것이 가장 현명합니다.",
+      "어떤 상황에서도 내 중심을 지키는 사람은 외부의 소음에 쉽게 흔들리지 않습니다.",
+      "오늘 우리가 내리는 작은 결정 하나가 일 년 뒤 완전히 다른 미래를 만들어낼 것입니다.",
+      "실패를 두려워하지 않는 태도란, 모든 과정을 배움과 데이터로 전환하는 능력을 말합니다.",
+      "상대방의 마음을 움직이는 가장 확실한 방법은 내 생각을 가장 정직하고 명료하게 전하는 것입니다.",
+      "높은 기준을 가진 사람일수록 스스로에게 엄격하지만, 그만큼 더 큰 성취를 이루어냅니다.",
+      "불필요한 긴장을 내려놓고 호흡을 가다듬으면, 본래 내가 가진 실력이 자연스럽게 드러납니다.",
+      "기회는 준비된 사람에게 찾아오며, 그 기회를 잡는 것은 결국 망설임 없는 첫마디입니다.",
+      "우리는 모두 각자의 속도로 성장하고 있으며, 지금 이 과정 역시 반드시 필요한 단계입니다.",
+      "정확한 데이터를 바탕으로 판단하되, 마지막 결단에는 나만의 확신을 담아야 합니다.",
+      "어려운 과제 앞에서 물러서지 않고 정면으로 마주할 때, 비로소 진짜 자신감이 생깁니다.",
+      "좋은 커뮤니케이션은 말을 많이 하는 것이 아니라, 꼭 필요한 말을 정확하게 전하는 것입니다.",
+      "내 안의 가능성을 제한하는 가장 큰 벽은 외부 환경이 아니라 내 머릿속의 고정관념입니다.",
+      "오늘의 노력이 당장 눈에 보이지 않더라도, 그 시간들은 결코 사라지지 않고 축적됩니다.",
+      "균형 잡힌 시각으로 전체를 바라볼 때, 부분적인 문제에 휩쓸리지 않을 수 있습니다.",
+      "목표가 분명한 사람은 주변의 사소한 반응에 일희일비하지 않고 자신의 길을 걸어갑니다.",
+      "말하기 전에 잠시 멈추어 호흡을 고르는 여유가 전체 발표의 품격을 한 단계 높여줍니다.",
+      "변화를 주도하는 사람들은 언제나 남들이 당연하게 여기는 것에 새로운 질문을 던집니다.",
+      "나의 강점을 정확히 이해하고 그것을 극대화하는 전략이 가장 효율적인 성장 방식입니다.",
+      "어떤 무대에서도 당당할 수 있는 비결은, 내 이야기가 가치가 있다는 스스로의 믿음입니다.",
+      "복잡한 생각을 글과 말로 정리하는 훈련은, 내 삶을 주도적으로 설계하는 가장 강력한 도구입니다.",
+      "실수는 과정의 일부일 뿐이며, 중요한 것은 그 다음 순간에 어떤 태도로 다시 일어서는가입니다.",
+      "차분하고 단단한 목소리는 듣는 사람에게 신뢰를 주고, 말하는 나 자신에게도 안정감을 줍니다.",
+      "먼 미래의 막연한 걱정보다, 지금 내 눈앞에 있는 이 한 문장을 완성하는 데 집중하겠습니다.",
+      "준비된 사람은 흔들리지 않습니다. 오늘도 나만의 기준과 목소리로 한 걸음 더 나아갑니다."
     ];
 
     let currentPromptIdx = 0;
-
     function getDailyPromptIndex() {
       const now = new Date();
-      const dateSeed = now.getFullYear() * 10000 + (now.getMonth() + 1) * 100 + now.getDate();
-      return dateSeed % samplePrompts.length;
+      return (now.getFullYear() * 10000 + (now.getMonth() + 1) * 100 + now.getDate()) % samplePrompts.length;
     }
-
     function renderPrompt(idx, isDaily) {
       currentPromptIdx = idx;
-      document.getElementById('prompterText').innerText = samplePrompts[idx];
+      document.getElementById('prompterText').innerText = `"${samplePrompts[idx]}"`;
       document.getElementById('promptIndexLabel').innerText = `${idx + 1} / ${samplePrompts.length}`;
       document.getElementById('promptBadge').innerText = isDaily ? '📅 오늘의 추천 문장' : '🎲 랜덤 트레이닝 문장';
     }
-
     function nextRandomPrompt() {
       let nextIdx = currentPromptIdx;
-      while (nextIdx === currentPromptIdx) {
-        nextIdx = Math.floor(Math.random() * samplePrompts.length);
-      }
+      while (nextIdx === currentPromptIdx) nextIdx = Math.floor(Math.random() * samplePrompts.length);
       renderPrompt(nextIdx, false);
     }
 
-    // 마이크 성량 미터
-    let micStream = null;
-    let audioCtx = null;
-    let micAnimFrame = null;
-    let micActive = false;
-
-    async function toggleMicMeter() {
-      micActive ? stopMicMeter() : await startMicMeter();
-    }
-
+    let micStream = null, audioCtx = null, micAnimFrame = null, micActive = false;
+    async function toggleMicMeter() { micActive ? stopMicMeter() : await startMicMeter(); }
     async function startMicMeter() {
-      const btn = document.getElementById('btn-mic');
-      const statusEl = document.getElementById('micStatus');
+      const btn = document.getElementById('btn-mic'), statusEl = document.getElementById('micStatus');
       try {
         micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
         audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         const source = audioCtx.createMediaStreamSource(micStream);
-        const analyser = audioCtx.createAnalyser();
-        analyser.fftSize = 256;
-        source.connect(analyser);
-
+        const analyser = audioCtx.createAnalyser(); analyser.fftSize = 256; source.connect(analyser);
         const dataArray = new Uint8Array(analyser.frequencyBinCount);
-        micActive = true;
-        btn.innerText = '마이크 체크 끄기';
-        btn.style.background = 'var(--danger)';
+        micActive = true; btn.innerText = '마이크 체크 끄기'; btn.style.background = 'var(--danger)';
         statusEl.innerText = '마이크 활성됨: 문장을 읽으면 성량 게이지가 실시간 반응합니다.';
-
         function updateMeter() {
           if (!micActive) return;
           analyser.getByteFrequencyData(dataArray);
-          let sum = 0;
-          for (let i = 0; i < dataArray.length; i++) sum += dataArray[i];
-          const avg = sum / dataArray.length;
-          const level = Math.min(100, Math.round(avg * 2.2));
-
+          let sum = 0; for (let i = 0; i < dataArray.length; i++) sum += dataArray[i];
+          const level = Math.min(100, Math.round((sum / dataArray.length) * 2.2));
           document.getElementById('micMeterFill').style.width = level + '%';
           const dbLabel = document.getElementById('dbLabel');
-          if (level < 12) {
-            dbLabel.innerText = '대기 / 작음';
-            dbLabel.style.color = 'var(--text-secondary)';
-          } else if (level < 55) {
-            dbLabel.innerText = '안정적 톤 (Good)';
-            dbLabel.style.color = 'var(--success)';
-          } else {
-            dbLabel.innerText = '명료한 성량 (Great)';
-            dbLabel.style.color = 'var(--accent)';
-          }
+          if (level < 12) { dbLabel.innerText = '대기 / 작음'; dbLabel.style.color = 'var(--text-secondary)'; }
+          else if (level < 55) { dbLabel.innerText = '안정적 톤 (Good)'; dbLabel.style.color = 'var(--success)'; }
+          else { dbLabel.innerText = '명료한 성량 (Great)'; dbLabel.style.color = 'var(--accent)'; }
           micAnimFrame = requestAnimationFrame(updateMeter);
         }
         updateMeter();
-      } catch (err) {
-        statusEl.innerText = '마이크 권한이 차단되어 있습니다. 브라우저 설정에서 마이크를 허용해 주세요.';
-      }
+      } catch (err) { statusEl.innerText = '마이크 권한이 차단되어 있습니다. 브라우저 설정에서 마이크를 허용해 주세요.'; }
     }
-
     function stopMicMeter() {
-      micActive = false;
-      cancelAnimationFrame(micAnimFrame);
-      if (micStream) {
-        micStream.getTracks().forEach(track => track.stop());
-        micStream = null;
-      }
-      if (audioCtx) {
-        audioCtx.close();
-        audioCtx = null;
-      }
+      micActive = false; cancelAnimationFrame(micAnimFrame);
+      if (micStream) { micStream.getTracks().forEach(t => t.stop()); micStream = null; }
+      if (audioCtx) { audioCtx.close(); audioCtx = null; }
       const btn = document.getElementById('btn-mic');
-      if (btn) {
-        btn.innerText = '마이크 성량 체크 켜기';
-        btn.style.background = 'var(--accent)';
-      }
-      const fill = document.getElementById('micMeterFill');
-      if (fill) fill.style.width = '0%';
-      const dbLabel = document.getElementById('dbLabel');
-      if (dbLabel) dbLabel.innerText = '대기 중';
+      if (btn) { btn.innerText = '마이크 성량 체크 켜기'; btn.style.background = 'var(--accent)'; }
+      const fill = document.getElementById('micMeterFill'); if (fill) fill.style.width = '0%';
+      const dbLabel = document.getElementById('dbLabel'); if (dbLabel) dbLabel.innerText = '대기 중';
     }
 
-    // 3. 노이즈 리셋: 10가지 상황 프리셋 데이터
     const anxietyPresets = [
-      {
-        tag: "#1. 나를 무시할 것 같을 때",
-        noise: "내가 말을 꺼내면 상대방이 속으로 나를 우습게 보거나 무시할 것 같다.",
-        alt1: "상대방은 내 말을 평가하려는 게 아니라 단순히 내용을 들으려는 중이다.",
-        alt2: "내가 내 생각을 정확히 말하지 않으면 상대방은 내 의도를 알 방법조차 없다.",
-        alt3: "실제로 말을 꺼냈을 때 대놓고 무시당한 객관적 증거는 없다.",
-        action: "상대 머릿속 추측을 멈추고, 내가 전달할 핵심 용건 1문장만 또박또박 말하기"
-      },
-      {
-        tag: "#2. 상대 표정이 무뚝뚝할 때",
-        noise: "상대 표정이 굳어 있는 걸 보니 내 이야기가 별로이거나 기분이 상한 것 같다.",
-        alt1: "원래 무표정이 기본 얼굴이거나 집중해서 들을 때 표정이 굳는 사람이다.",
-        alt2: "나와 전혀 상관없는 개인적인 피로나 다른 고민 때문에 표정이 어두운 것이다.",
-        alt3: "겉표정과 달리 속으로는 내 말을 수긍하며 정리하고 있을 수 있다.",
-        action: "표정 해석에 에너지 쓰지 말고, 평소보다 10%만 느린 속도로 내 페이스 유지하기"
-      },
-      {
-        tag: "#3. 목소리가 작아지고 떨릴 때",
-        noise: "목소리가 귓속말처럼 작아지거나 떨려서 상대가 나를 자신감 없는 사람으로 볼 것이다.",
-        alt1: "긴장해서 성대 근육이 일시적으로 수축했을 뿐, 내 실력이 부족한 게 아니다.",
-        alt2: "숨을 한 번 크게 내쉬고 첫 단어만 천천히 떼면 성대 긴장은 바로 풀린다.",
-        alt3: "조용하고 차분하게 말하는 톤은 오히려 신중하고 진지한 인상을 줄 수 있다.",
-        action: "말하기 직전 코로 들이마시고 입으로 길게 내쉰 뒤, 첫 마디만 단단하게 소리 내기"
-      },
-      {
-        tag: "#4. 말실수할까 봐 두려울 때",
-        noise: "단어를 잘못 고르거나 버벅거리면 치명적인 실수가 되어 창피를 당할 것이다.",
-        alt1: "완벽하게 매끄러운 문장보다 핵심 의도가 전달되는 것이 훨씬 중요하다.",
-        alt2: "잠시 멈추고 '다시 말씀드리면'이라고 고쳐 말하는 것은 프로들도 흔히 하는 방식이다.",
-        alt3: "듣는 사람은 내가 걱정하는 것만큼 작은 말실수를 오래 기억하지 않는다.",
-        action: "완벽한 문장 강박 버리고, 핵심 키워드 2개만 연결해서 편하게 전달하기"
-      },
-      {
-        tag: "#5. 가까운 가족·지인 앞이라 어색할 때",
-        noise: "나를 너무 잘 아는 가족이나 지인 앞에서는 내 현재 모습이 초라해 보일까 봐 입이 안 떨어진다.",
-        alt1: "가까운 사람들은 나를 평가하는 심사위원이 아니라 일상을 공유하는 편한 존재다.",
-        alt2: "길게 대화할 필요 없이 용건만 담백하고 짧게 답해도 충분히 예의 바른 소통이다.",
-        alt3: "고개를 돌리거나 피할수록 오히려 오해가 생기므로 짧은 한마디가 훨씬 편하다.",
-        action: "감정 섞지 않고 학원 선생님께 대답하듯 담백하고 쿨한 톤으로 한 문장만 답하기"
-      },
-      {
-        tag: "#6. 시선이 집중되어 머리가 하얘질 때",
-        noise: "여러 사람의 시선이 나에게 쏠리는 순간 압박감 때문에 아무 생각도 나지 않는다.",
-        alt1: "사람들이 나를 쳐다보는 것은 공격하려는 게 아니라 기본적인 예의이자 관심이다.",
-        alt2: "시선을 한 사람 눈동자에 고정하지 않고 미간이나 허공을 보며 말해도 전혀 티가 안 난다.",
-        alt3: "머리가 하얘질 땐 2초간 침묵하며 숨을 골라도 여유 있는 태도로 보인다.",
-        action: "시선 압박을 피하기 위해 한 곳을 가볍게 응시하고, 준비한 첫 문장만 기계적으로 꺼내기"
-      },
-      {
-        tag: "#7. 내 의견이 부족해 보일까 봐 걱정될 때",
-        noise: "내 생각이 아직 완벽하지 않아서 말하면 수준이 낮아 보일 것 같다.",
-        alt1: "모든 의견은 처음부터 완성된 정답이 아니라 대화를 통해 발전시키는 초안이다.",
-        alt2: "'제 생각에는 ~방향이 좋을 것 같습니다'처럼 가볍게 제안하면 부담이 줄어든다.",
-        alt3: "높은 기준을 가진 사람일수록 스스로를 과소평가하는 경향이 있을 뿐이다.",
-        action: "'완벽한 정답' 대신 '지금 단계의 내 의견'이라는 전제로 가볍게 공유하기"
-      },
-      {
-        tag: "#8. 대화가 끊길까 봐 압박감 들 때",
-        noise: "내가 말을 이어가지 못해 정적이 흐르면 어색하고 불편한 분위기가 될 것이다.",
-        alt1: "대화의 책임은 나 혼자 지는 것이 아니라 상대방과 50:50으로 나누어 갖는 것이다.",
-        alt2: "침묵이 흐를 때는 억지로 말을 채우기보다 상대에게 짧은 질문을 던지면 된다.",
-        alt3: "잠깐의 정적은 서로 생각을 정리하는 자연스러운 여백일 뿐이다.",
-        action: "내가 다 말하려 하지 말고, 끝에 '이 부분에 대해서는 어떻게 생각하세요?'라고 질문 넘기기"
-      },
-      {
-        tag: "#9. 완벽하게 말해야 한다는 강박이 들 때",
-        noise: "내 높은 목표와 이상에 걸맞게 처음부터 끝까지 빈틈없이 말해야만 한다.",
-        alt1: "100점짜리 스피치를 기다리다 입을 닫는 것보다, 70점짜리라도 실행하는 것이 압도적으로 낫다.",
-        alt2: "실전 경험이 쌓여야 내가 원하는 이상적인 모습에 가까워질 수 있다.",
-        alt3: "지금의 말하기는 최종 시험이 아니라 목표를 향해 가는 가벼운 연습 과정이다.",
-        action: "완성도 70%만 되어도 성공이라고 기준을 낮추고 지금 바로 첫마디 내뱉기"
-      },
-      {
-        tag: "#10. 먼저 말을 꺼내기 망설여질 때",
-        noise: "지금 말을 걸면 방해가 되거나 어색해질 것 같아서 타이밍을 계속 놓친다.",
-        alt1: "상대방은 내가 먼저 말을 걸어주면 오히려 고마워하거나 자연스럽게 받아들인다.",
-        alt2: "거창한 인사말 대신 '잠시 여쭤볼 게 있는데요'라는 단순한 신호면 충분하다.",
-        alt3: "망설이는 시간이 길어질수록 뇌의 긴장도만 올라가므로 3초 안에 시작하는 게 편하다.",
-        action: "생각을 멈추고 속으로 '3, 2, 1' 센 뒤 가장 단순한 첫마디 바로 건네기"
-      }
+      { tag: "#1. 나를 무시할 것 같을 때", noise: "말을 꺼내면 상대가 속으로 나를 우습게 보거나 무시할 것 같다.", alt1: "상대는 나를 평가하는 게 아니라 단순히 내용을 들으려는 중이다.", alt2: "말하지 않으면 상대는 내 의도를 알 방법조차 없다.", alt3: "실제로 말을 꺼냈을 때 대놓고 무시당한 객관적 증거는 없다.", action: "상대 머릿속 추측 멈추고, 전달할 핵심 용건 1문장만 또박또박 말하기" },
+      { tag: "#2. 상대 표정이 무뚝뚝할 때", noise: "상대 표정이 굳어 있는 걸 보니 내 이야기가 별로이거나 기분이 상한 것 같다.", alt1: "원래 무표정이 기본 얼굴이거나 집중해서 들을 때 표정이 굳는 사람이다.", alt2: "나와 무관한 개인적인 피로나 다른 고민 때문에 표정이 어두운 것이다.", alt3: "겉표정과 달리 속으로는 내 말을 수긍하며 정리하고 있을 수 있다.", action: "표정 해석에 에너지 쓰지 말고, 평소보다 10% 느린 속도로 내 페이스 유지하기" },
+      { tag: "#3. 목소리가 작아지고 떨릴 때", noise: "목소리가 귓속말처럼 작아지거나 떨려서 자신감 없는 사람으로 보일 것이다.", alt1: "긴장해서 성대 근육이 일시적으로 수축했을 뿐 실력이 부족한 게 아니다.", alt2: "숨을 크게 내쉬고 첫 단어만 천천히 떼면 성대 긴장은 바로 풀린다.", alt3: "조용하고 차분한 톤은 오히려 신중하고 진지한 인상을 줄 수 있다.", action: "말하기 직전 코로 들이마시고 입으로 길게 내쉰 뒤 첫 마디만 단단하게 내뱉기" },
+      { tag: "#4. 말실수할까 봐 두려울 때", noise: "단어를 잘못 고르거나 버벅거리면 치명적인 실수가 되어 창피를 당할 것이다.", alt1: "완벽하게 매끄러운 문장보다 핵심 의도가 전달되는 것이 훨씬 중요하다.", alt2: "'다시 말씀드리면'이라고 고쳐 말하는 것은 프로들도 흔히 하는 방식이다.", alt3: "듣는 사람은 내가 걱정하는 것만큼 작은 말실수를 오래 기억하지 않는다.", action: "완벽한 문장 강박 버리고, 핵심 키워드 2개만 연결해서 편하게 전달하기" },
+      { tag: "#5. 가족·지인 앞이라 어색할 때", noise: "나를 잘 아는 가족이나 지인 앞에서는 현재 모습이 초라해 보일까 봐 입이 안 떨어진다.", alt1: "가까운 사람들은 나를 평가하는 심사위원이 아니라 일상을 공유하는 존재다.", alt2: "길게 대화할 필요 없이 용건만 담백하고 짧게 답해도 충분한 소통이다.", alt3: "고개를 돌리거나 피할수록 오해가 생기므로 짧은 한마디가 훨씬 편하다.", action: "감정 섞지 않고 학원 선생님께 답하듯 담백하고 쿨한 톤으로 한 문장만 답하기" },
+      { tag: "#6. 시선이 집중되어 하얘질 때", noise: "여러 사람의 시선이 쏠리는 순간 압박감 때문에 아무 생각도 나지 않는다.", alt1: "나를 쳐다보는 것은 공격하려는 게 아니라 기본적인 예의이자 관심이다.", alt2: "눈동자에 고정하지 않고 미간이나 허공을 보며 말해도 전혀 티가 안 난다.", alt3: "머리가 하얘질 땐 2초간 침묵하며 숨을 골라도 여유 있는 태도로 보인다.", action: "시선 압박 피하기 위해 한 곳을 가볍게 응시하고, 준비한 첫 문장만 꺼내기" },
+      { tag: "#7. 의견이 부족해 보일까 봐 걱정", noise: "내 생각이 아직 완벽하지 않아서 말하면 수준이 낮아 보일 것 같다.", alt1: "모든 의견은 처음부터 완성된 정답이 아니라 대화를 통해 발전시키는 초안이다.", alt2: "'제 생각에는 ~방향이 좋을 것 같습니다'처럼 제안하면 부담이 줄어든다.", alt3: "높은 기준을 가진 사람일수록 스스로를 과소평가하는 경향이 있을 뿐이다.", action: "'완벽한 정답' 대신 '지금 단계의 내 의견'이라는 전제로 가볍게 공유하기" },
+      { tag: "#8. 대화가 끊길까 봐 압박감 들 때", noise: "말을 이어가지 못해 정적이 흐르면 어색하고 불편한 분위기가 될 것이다.", alt1: "대화의 책임은 나 혼자 지는 것이 아니라 상대방과 50:50으로 나누는 것이다.", alt2: "침묵이 흐를 때는 억지로 채우기보다 상대에게 짧은 질문을 던지면 된다.", alt3: "잠깐의 정적은 서로 생각을 정리하는 자연스러운 여백일 뿐이다.", action: "내가 다 말하려 하지 말고, 끝에 '이 부분은 어떻게 생각하세요?'라고 질문 넘기기" },
+      { tag: "#9. 완벽하게 말해야 한다는 강박", noise: "내 높은 목표와 이상에 걸맞게 처음부터 끝까지 빈틈없이 말해야만 한다.", alt1: "100점짜리 스피치를 기다리다 입을 닫는 것보다 70점짜리 실행이 압도적으로 낫다.", alt2: "실전 경험이 쌓여야 내가 원하는 이상적인 모습에 가까워질 수 있다.", alt3: "지금의 말하기는 최종 시험이 아니라 목표를 향해 가는 가벼운 연습이다.", action: "완성도 70%만 되어도 성공이라고 기준 낮추고 지금 바로 첫마디 내뱉기" },
+      { tag: "#10. 먼저 말을 꺼내기 망설여질 때", noise: "지금 말을 걸면 방해가 되거나 어색해질 것 같아서 타이밍을 계속 놓친다.", alt1: "상대방은 내가 먼저 말을 걸어주면 오히려 고마워하거나 자연스럽게 받아들인다.", alt2: "거창한 인사말 대신 '잠시 여쭤볼 게 있는데요'라는 단순한 신호면 충분하다.", alt3: "망설이는 시간이 길어질수록 긴장도만 올라가므로 3초 안에 시작하는 게 편하다.", action: "생각 멈추고 속으로 '3, 2, 1' 센 뒤 가장 단순한 첫마디 바로 건네기" }
     ];
 
     function renderPresetChips() {
-      const grid = document.getElementById('presetGrid');
-      grid.innerHTML = '';
+      const grid = document.getElementById('presetGrid'); grid.innerHTML = '';
       anxietyPresets.forEach((item, idx) => {
-        const chip = document.createElement('button');
-        chip.type = 'button';
-        chip.className = 'preset-chip';
-        chip.innerText = item.tag;
-        chip.onclick = () => applyPreset(idx, chip);
-        grid.appendChild(chip);
+        const chip = document.createElement('button'); chip.type = 'button'; chip.className = 'preset-chip'; chip.innerText = item.tag;
+        chip.onclick = () => applyPreset(idx, chip); grid.appendChild(chip);
       });
     }
-
     function applyPreset(idx, chipEl) {
-      document.querySelectorAll('.preset-chip').forEach(c => c.classList.remove('selected'));
-      chipEl.classList.add('selected');
-
-      const data = anxietyPresets[idx];
-      document.getElementById('noiseInput').value = data.noise;
-      document.getElementById('alt1').value = data.alt1;
-      document.getElementById('alt2').value = data.alt2;
-      document.getElementById('alt3').value = data.alt3;
-      document.getElementById('focusAction').value = data.action;
-
-      // 이전 소거 연출 초기화
+      document.querySelectorAll('.preset-chip').forEach(c => c.classList.remove('selected')); chipEl.classList.add('selected');
+      const d = anxietyPresets[idx];
+      document.getElementById('noiseInput').value = d.noise; document.getElementById('alt1').value = d.alt1;
+      document.getElementById('alt2').value = d.alt2; document.getElementById('alt3').value = d.alt3;
+      document.getElementById('focusAction').value = d.action;
       document.getElementById('noiseBoxGroup').classList.remove('shredded');
       document.getElementById('signalResultCard').style.display = 'none';
     }
-
     function executeNoiseReset() {
-      const noiseVal = document.getElementById('noiseInput').value.trim();
-      const actionVal = document.getElementById('focusAction').value.trim();
-
-      if (!actionVal) {
-        alert("위 상황 버튼을 누르거나, 실행할 핵심 액션 1가지를 입력해 주세요.");
-        return;
-      }
-
-      // 1. 노이즈 시각적 소거 연출
+      const noiseVal = document.getElementById('noiseInput').value.trim(), actionVal = document.getElementById('focusAction').value.trim();
+      if (!actionVal) { alert("위 상황 버튼을 누르거나 실행할 핵심 액션 1가지를 입력해 주세요."); return; }
       document.getElementById('noiseBoxGroup').classList.add('shredded');
-
-      // 2. 시그널 집중 카드 표시
-      const resultCard = document.getElementById('signalResultCard');
       document.getElementById('signalResultText').innerText = `"${actionVal}"`;
-      resultCard.style.display = 'block';
-
-      // 3. 기기 내 로컬 로그에 누적 저장
-      const logs = JSON.parse(localStorage.getItem('stage_voice_logs') || '[]');
-      const now = new Date();
+      document.getElementById('signalResultCard').style.display = 'block';
+      const logs = JSON.parse(localStorage.getItem('stage_voice_logs') || '[]'), now = new Date();
       const dateStr = `${now.getMonth() + 1}/${now.getDate()} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-
-      logs.unshift({
-        id: Date.now(),
-        date: dateStr,
-        noise: noiseVal || "(직접 입력한 긴장 상황)",
-        action: actionVal
-      });
-
-      // 최대 20개까지 유지
-      if (logs.length > 20) logs.pop();
+      logs.unshift({ id: Date.now(), date: dateStr, noise: noiseVal || "(직접 입력한 긴장 상황)", action: actionVal, win: false });
+      if (logs.length > 30) logs.pop();
       localStorage.setItem('stage_voice_logs', JSON.stringify(logs));
       renderLogs();
     }
-
     function resetFormInputs() {
       document.querySelectorAll('.preset-chip').forEach(c => c.classList.remove('selected'));
-      document.getElementById('noiseInput').value = '';
-      document.getElementById('alt1').value = '';
-      document.getElementById('alt2').value = '';
-      document.getElementById('alt3').value = '';
-      document.getElementById('focusAction').value = '';
+      ['noiseInput', 'alt1', 'alt2', 'alt3', 'focusAction'].forEach(id => document.getElementById(id).value = '');
       document.getElementById('noiseBoxGroup').classList.remove('shredded');
       document.getElementById('signalResultCard').style.display = 'none';
     }
-
+    function toggleWin(id) {
+      let logs = JSON.parse(localStorage.getItem('stage_voice_logs') || '[]');
+      logs = logs.map(item => item.id === id ? { ...item, win: !item.win } : item);
+      localStorage.setItem('stage_voice_logs', JSON.stringify(logs));
+      renderLogs();
+    }
     function renderLogs() {
-      const logs = JSON.parse(localStorage.getItem('stage_voice_logs') || '[]');
-      const listEl = document.getElementById('logList');
-      document.getElementById('logCount').innerText = `${logs.length}건`;
+      const logs = JSON.parse(localStorage.getItem('stage_voice_logs') || '[]'), listEl = document.getElementById('logList');
+      const winCount = logs.filter(l => l.win).length;
+      document.getElementById('totalResetCount').innerText = `${logs.length}회`;
+      document.getElementById('totalWinCount').innerText = `${winCount}회`;
 
       if (logs.length === 0) {
-        listEl.innerHTML = `<div style="font-size: 12px; color: var(--text-secondary); text-align: center; padding: 12px 0;">아직 기록된 로그가 없습니다. 위에서 상황을 선택해 첫 리셋을 실행해 보세요.</div>`;
+        listEl.innerHTML = `<div style="font-size: 13px; color: var(--text-secondary); text-align: center; padding: 24px 10px; line-height: 1.6;">아직 기록된 로그가 없습니다.<br/><b>[3. 노이즈 리셋]</b> 탭에서 상황을 선택해 첫 리셋을 실행하면 이곳에 성공 기록이 쌓입니다.</div>`;
         return;
       }
-
       listEl.innerHTML = '';
       logs.forEach(log => {
         const item = document.createElement('div');
-        item.className = 'log-item';
+        item.className = 'log-item' + (log.win ? ' verified-win' : '');
         item.innerHTML = `
-          <div class="log-item-content">
-            <span class="log-date">${log.date} 리셋 완료</span>
-            <span class="log-noise-strike">${log.noise}</span>
-            <span class="log-action-bold">→ ${log.action}</span>
+          <div class="log-top-row">
+            <span class="log-date">${log.date} 리셋 기록</span>
+            <button class="del-log-btn" onclick="deleteLog(${log.id})" title="삭제">삭제 ✕</button>
           </div>
-          <button class="del-log-btn" onclick="deleteLog(${log.id})" title="삭제">✕</button>
+          <div class="log-noise-strike">${log.noise}</div>
+          <div class="log-action-bold">→ ${log.action}</div>
+          <div class="log-bottom-row">
+            <span style="font-size: 11px; color: var(--text-secondary);">${log.win ? '✨ 실제로 해낸 성공 기억' : '말하고 난 뒤 아래 버튼을 눌러 체크하세요'}</span>
+            <button class="win-toggle-btn ${log.win ? 'active' : ''}" onclick="toggleWin(${log.id})">
+              ${log.win ? '🏆 실전 성공 완료!' : '☆ 해냈어요 체크'}
+            </button>
+          </div>
         `;
         listEl.appendChild(item);
       });
     }
-
     function deleteLog(id) {
       let logs = JSON.parse(localStorage.getItem('stage_voice_logs') || '[]');
       logs = logs.filter(item => item.id !== id);
@@ -1190,12 +510,7 @@
       renderLogs();
     }
 
-    // 초기 실행
-    window.addEventListener('DOMContentLoaded', () => {
-      renderPrompt(getDailyPromptIndex(), true);
-      renderPresetChips();
-      renderLogs();
-    });
+    window.addEventListener('DOMContentLoaded', () => { renderPrompt(getDailyPromptIndex(), true); renderPresetChips(); renderLogs(); });
   </script>
 </body>
 </html>
