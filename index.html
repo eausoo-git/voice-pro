@@ -764,7 +764,7 @@
 
     let micStream = null, audioCtx = null, micAnimFrame = null, micActive = false;
     async function toggleMicMeter() { micActive ? stopMicMeter() : await startMicMeter(); }
-    async function startMicMeter() {
+   async function startMicMeter() {
       const btn = document.getElementById('btn-mic'), statusEl = document.getElementById('micStatus');
       try {
         micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -774,11 +774,23 @@
         const dataArray = new Uint8Array(analyser.frequencyBinCount);
         micActive = true; btn.innerText = '마이크 체크 끄기'; btn.style.background = 'var(--danger)';
         statusEl.innerText = '마이크 활성됨: 문장을 읽으면 성량 게이지가 실시간 반응합니다.';
+
+        let smoothLevel = 0;
+        const NOISE_GATE = 10;      // 귀속말·미세 소음 평균값 컷 기준 (8~16 조절 가능)
+        const SENSITIVITY = 1.15;   // 기존 2.2에서 하향 조정 (0.9~1.5 조절 가능)
+
         function updateMeter() {
           if (!micActive) return;
           analyser.getByteFrequencyData(dataArray);
           let sum = 0; for (let i = 0; i < dataArray.length; i++) sum += dataArray[i];
-          const level = Math.min(100, Math.round((sum / dataArray.length) * 2.2));
+          const avg = sum / dataArray.length;
+
+          const gated = Math.max(0, avg - NOISE_GATE);
+          const rawLevel = Math.min(100, Math.round(Math.pow(gated * SENSITIVITY, 1.15)));
+
+          smoothLevel += (rawLevel - smoothLevel) * 0.25;
+          const level = smoothLevel < 1.5 ? 0 : Math.round(smoothLevel);
+
           document.getElementById('micMeterFill').style.width = level + '%';
           const dbLabel = document.getElementById('dbLabel');
           if (level < 12) { dbLabel.innerText = '대기 / 작음'; dbLabel.style.color = 'var(--text-secondary)'; }
