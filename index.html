@@ -1200,7 +1200,7 @@
 })();
 </script>
 <!-- ▲ 객관적 데이터 & 남길 시그널 여러 줄 자동확장(Textarea) 변환 끝 ▲ -->
-<!-- ▼ 노이즈 리셋 JSON 백업 (기본 10가지 + 생성 카드 통합 · 안드로이드/아이폰 호환) 시작 ▼ -->
+<!-- ▼ 노이즈 리셋 JSON 백업 (situation 포함 · 기본 10가지 + 생성 카드 통합 · 안드로이드/아이폰 호환) 시작 ▼ -->
 <style>
   #svJsonBackupBar {
     margin-top: 14px;
@@ -1243,6 +1243,7 @@
       id: 'builtin_01',
       source: 'builtin',
       createdAt: '기본 내장 #1',
+      situation: '#1. 나를 무시할 것 같을 때',
       noise: '말을 꺼내면 상대가 속으로 나를 우습게 보거나 무시할 것 같다.',
       evidence1: '상대는 나를 평가하려는 게 아니라 전달하려는 핵심 내용을 들으려 한다.',
       evidence2: '말하지 않으면 내 의도와 준비된 근거를 알 방법이 없다.',
@@ -1254,17 +1255,19 @@
       id: 'builtin_02',
       source: 'builtin',
       createdAt: '기본 내장 #2',
-      noise: '말을 길게 설명하려다 논점이 흐트러지고 핵심을 놓칠 것 같다.',
-      evidence1: '핵심 결론 한 문장을 먼저 말하면 상대의 이해도가 높아진다.',
-      evidence2: '세부 근거는 질문이 나올 때 덧붙여도 충분하다.',
-      evidence3: '모든 배경을 다 설명해야만 전달이 되는 것은 아니다.',
-      signal: '결론부터 짧고 명료하게 말하고, 나머지는 필요할 때 꺼낸다.',
+      situation: '#2. 상대 표정이 무뚝뚝할 때',
+      noise: '상대 표정이 무뚝뚝하거나 반응이 없으면 내 말이 지루한 것 같다.',
+      evidence1: '무표정은 집중하거나 생각 중인 상태일 때 흔히 나타난다.',
+      evidence2: '반응 속도가 느리다고 해서 내용 전달이 안 된 것은 아니다.',
+      evidence3: '상대 표정을 과잉 해석하지 않고 내 전달에만 집중할 수 있다.',
+      signal: '표정 추측을 멈추고 내 말의 명료함과 호흡에만 집중한다.',
       completed: false
     },
     {
       id: 'builtin_03',
       source: 'builtin',
       createdAt: '기본 내장 #3',
+      situation: '#3. 목소리가 작아지고 떨릴 때',
       noise: '목소리가 떨리거나 빨라지면 실력이나 자신감이 없어 보일 것 같다.',
       evidence1: '호흡을 한 번 고르고 말 속도를 10% 늦추면 발성이 안정된다.',
       evidence2: '완벽한 톤보다 전달하고자 하는 메시지의 명확성이 더 중요하다.',
@@ -1276,61 +1279,7 @@
       id: 'builtin_04',
       source: 'builtin',
       createdAt: '기본 내장 #4',
-      noise: '상대가 날카롭게 질문하거나 반박하면 당황해서 머리가 하얘질 것 같다.',
-      evidence1: '질문은 공격이 아니라 궁금한 지점을 확인하려는 과정이다.',
-      evidence2: '모르거나 확인이 필요한 부분은 확인 후 공유하겠다고 답할 수 있다.',
-      evidence3: '즉답을 못 해도 침착하게 정리해 말하면 신뢰가 유지된다.',
-      signal: '질문을 받으면 한숨 고르고 사실을 기준으로 차분히 답한다.',
-      completed: false
-    },
-    {
-      id: 'builtin_05',
-      source: 'builtin',
-      createdAt: '기본 내장 #5',
-      noise: '완벽하게 준비되지 않은 상태에서 말하면 빈틈이 들통날 것 같다.',
-      evidence1: '현재 확인된 사실과 진행 상황을 있는 그대로 공유하는 것이 중요하다.',
-      evidence2: '100% 완성된 상태가 아니어도 지금 단계의 가치와 계획은 유효하다.',
-      evidence3: '빈틈을 숨기려 하기보다 명확한 기준을 제시하는 편이 낫다.',
-      signal: '완벽함 대신 투명하고 단단한 한 걸음을 전한다.',
-      completed: false
-    },
-    {
-      id: 'builtin_06',
-      source: 'builtin',
-      createdAt: '기본 내장 #6',
-      noise: '내 의견이 거절당하면 내 제안이나 노력 전체가 부정당하는 것 같다.',
-      evidence1: '의견이나 제안에 대한 피드백은 인격이나 가치에 대한 평가와 다르다.',
-      evidence2: '거절이나 수정 요청은 방향을 맞추기 위한 조율 과정일 수 있다.',
-      evidence3: '대안을 하나 더 준비해 두면 선택지가 넓어진다.',
-      signal: '거절은 방향 조율일 뿐, 나의 가치와 역량은 그대로다.',
-      completed: false
-    },
-    {
-      id: 'builtin_07',
-      source: 'builtin',
-      createdAt: '기본 내장 #7',
-      noise: '발표나 회의 초반에 시선이 집중되면 호흡이 막히고 숨이 찰 것 같다.',
-      evidence1: '첫 문장 전에 2초간 멈추고 시선을 고르면 호흡이 트인다.',
-      evidence2: '시작 구간만 넘기면 이후 흐름은 훨씬 자연스러워진다.',
-      evidence3: '첫 마디를 완벽하게 시작할 의무는 없다.',
-      signal: '시작 전 2초 호흡으로 중심을 잡고 첫 문장을 편하게 연다.',
-      completed: false
-    },
-    {
-      id: 'builtin_08',
-      source: 'builtin',
-      createdAt: '기본 내장 #8',
-      noise: '상대 표정이 무뚝뚝하거나 반응이 없으면 내 말이 지루한 것 같다.',
-      evidence1: '무표정은 집중하거나 생각 중인 상태일 때 흔히 나타난다.',
-      evidence2: '반응 속도가 느리다고 해서 내용 전달이 안 된 것은 아니다.',
-      evidence3: '상대 표정을 과잉 해석하지 않고 내 전달에만 집중할 수 있다.',
-      signal: '표정 추측을 멈추고 내 말의 명료함과 호흡에만 집중한다.',
-      completed: false
-    },
-    {
-      id: 'builtin_09',
-      source: 'builtin',
-      createdAt: '기본 내장 #9',
+      situation: '#4. 말실수할까 봐 두려울 때',
       noise: '실수나 말실수를 한 번 하면 그 뒤로 계속 위축될 것 같다.',
       evidence1: '작은 말실수는 누구나 겪으며 대화 전체를 망가뜨리지 않는다.',
       evidence2: '정정할 부분이 있으면 짧게 바로잡고 다음 문장으로 넘어가면 된다.',
@@ -1339,9 +1288,70 @@
       completed: false
     },
     {
+      id: 'builtin_05',
+      source: 'builtin',
+      createdAt: '기본 내장 #5',
+      situation: '#5. 가족·지인 앞이라 어색할 때',
+      noise: '가까운 사람 앞에서도 긴장하거나 어색해지면 관계가 어색해질 것 같다.',
+      evidence1: '가까운 사이일수록 완벽한 말솜씨보다 진솔한 태도가 더 편하다.',
+      evidence2: '잠시 호흡을 고르며 어색함을 억지로 감추지 않아도 괜찮다.',
+      evidence3: '익숙한 관계일수록 작은 말실수도 금방 자연스럽게 넘어간다.',
+      signal: '잘 보이려 애쓰지 않고 편안한 호흡으로 한 문장씩 자연스럽게 말한다.',
+      completed: false
+    },
+    {
+      id: 'builtin_06',
+      source: 'builtin',
+      createdAt: '기본 내장 #6',
+      situation: '#6. 시선이 집중되어 하얘질 때',
+      noise: '발표나 회의 초반에 시선이 집중되면 호흡이 막히고 숨이 찰 것 같다.',
+      evidence1: '첫 문장 전에 2초간 멈추고 시선을 고르면 호흡이 트인다.',
+      evidence2: '시작 구간만 넘기면 이후 흐름은 훨씬 자연스러워진다.',
+      evidence3: '첫 마디를 완벽하게 시작할 의무는 없다.',
+      signal: '시작 전 2초 호흡으로 중심을 잡고 첫 문장을 편하게 연다.',
+      completed: false
+    },
+    {
+      id: 'builtin_07',
+      source: 'builtin',
+      createdAt: '기본 내장 #7',
+      situation: '#7. 의견이 부족해 보일까 봐 걱정',
+      noise: '완벽하게 준비되지 않은 상태에서 말하면 빈틈이 들통날 것 같다.',
+      evidence1: '현재 확인된 사실과 진행 상황을 있는 그대로 공유하는 것이 중요하다.',
+      evidence2: '100% 완성된 상태가 아니어도 지금 단계의 가치와 계획은 유효하다.',
+      evidence3: '빈틈을 숨기려 하기보다 명확한 기준을 제시하는 편이 낫다.',
+      signal: '완벽함 대신 투명하고 단단한 한 걸음을 전한다.',
+      completed: false
+    },
+    {
+      id: 'builtin_08',
+      source: 'builtin',
+      createdAt: '기본 내장 #8',
+      situation: '#8. 대화가 끊길까 봐 압박감 들 때',
+      noise: '말을 길게 설명하려다 논점이 흐트러지고 핵심을 놓칠 것 같다.',
+      evidence1: '핵심 결론 한 문장을 먼저 말하면 상대의 이해도가 높아진다.',
+      evidence2: '세부 근거는 질문이 나올 때 덧붙여도 충분하다.',
+      evidence3: '모든 배경을 다 설명해야만 전달이 되는 것은 아니다.',
+      signal: '결론부터 짧고 명료하게 말하고, 나머지는 필요할 때 꺼낸다.',
+      completed: false
+    },
+    {
+      id: 'builtin_09',
+      source: 'builtin',
+      createdAt: '기본 내장 #9',
+      situation: '#9. 완벽하게 말해야 한다는 강박',
+      noise: '상대가 날카롭게 질문하거나 반박하면 당황해서 머리가 하얘질 것 같다.',
+      evidence1: '질문은 공격이 아니라 궁금한 지점을 확인하려는 과정이다.',
+      evidence2: '모르거나 확인이 필요한 부분은 확인 후 공유하겠다고 답할 수 있다.',
+      evidence3: '즉답을 못 해도 침착하게 정리해 말하면 신뢰가 유지된다.',
+      signal: '질문을 받으면 한숨 고르고 사실을 기준으로 차분히 답한다.',
+      completed: false
+    },
+    {
       id: 'builtin_10',
       source: 'builtin',
       createdAt: '기본 내장 #10',
+      situation: '#10. 먼저 말을 꺼내기 망설여질 때',
       noise: '중요한 자리일수록 잘해야 한다는 압박감 때문에 오히려 굳어버린다.',
       evidence1: '중요한 자리일수록 과장된 꾸밈보다 담백하고 정확한 전달이 먹힌다.',
       evidence2: '지금까지 쌓아온 준비와 경험은 이미 내 안에 있다.',
@@ -1350,6 +1360,17 @@
       completed: false
     }
   ];
+
+  let lastSelectedSituation = '';
+
+  document.addEventListener('click', (e) => {
+    const target = e.target.closest('button, [role="button"], .chip, .preset-item');
+    if (!target || target.closest('#svJsonBackupBar')) return;
+    const txt = (target.innerText || '').trim();
+    if (/^#\d{1,2}\./.test(txt)) {
+      lastSelectedSituation = txt;
+    }
+  });
 
   function isVisible(el) {
     if (!el) return false;
@@ -1371,12 +1392,12 @@
     }) || null;
   }
 
-  // 화면에 렌더링된 리셋 로그 카드들 + localStorage에 저장된 로그 카드들 수집
   function collectCreatedCards() {
     const created = [];
     const seenKeys = new Set();
 
     function pushItem(item) {
+      const situation = String(item.situation || '').trim();
       const noise = String(item.noise || '').trim();
       const signal = String(item.signal || '').trim();
       const ev1 = String(item.evidence1 || '').trim();
@@ -1386,7 +1407,7 @@
       const createdAt = String(item.createdAt || '');
 
       if (!noise && !signal && !ev1 && !ev2 && !ev3) return;
-      const dedupKey = `${createdAt}|${noise}|${signal}|${completed}`;
+      const dedupKey = `${createdAt}|${situation}|${noise}|${signal}|${completed}`;
       if (seenKeys.has(dedupKey)) return;
       seenKeys.add(dedupKey);
 
@@ -1394,6 +1415,7 @@
         id: item.id || ('created_' + (created.length + 1)),
         source: 'custom_card',
         createdAt,
+        situation,
         noise,
         evidence1: ev1,
         evidence2: ev2,
@@ -1403,7 +1425,6 @@
       });
     }
 
-    // 1) localStorage 내 기존 로그 데이터 탐색
     try {
       for (let i = 0; i < localStorage.length; i++) {
         const k = localStorage.key(i);
@@ -1418,6 +1439,7 @@
             pushItem({
               id: entry.id,
               createdAt: entry.createdAt || entry.date || entry.time || '',
+              situation: entry.situation || entry.situationLabel || lastSelectedSituation || '',
               noise: entry.noise || '',
               evidence1: entry.evidence1 || evs[0] || '',
               evidence2: entry.evidence2 || evs[1] || '',
@@ -1430,7 +1452,6 @@
       }
     } catch (_) {}
 
-    // 2) 리셋 로그 화면 카드 DOM에서 직접 추출
     const logBox = findVisibleLogBox();
     if (logBox) {
       const cardCandidates = Array.from(logBox.querySelectorAll('div')).filter((el) => {
@@ -1448,16 +1469,19 @@
           .filter((s) => s && !/전체화면\s*재생|삭제|×|카드를\s*눌러|리셋\s*과정\s*다시\s*보기|실제로\s*해낸\s*성공\s*기억/.test(s));
 
         let createdAt = '';
+        let situation = '';
         let noise = '';
         let signal = '';
-        let completed = /실천\s*성공\s*완료|해냈어요\s*체크/.test(cardEl.innerText || '');
+        const completed = /실천\s*성공\s*완료|해냈어요\s*체크/.test(cardEl.innerText || '');
 
         for (const line of lines) {
           if (!createdAt && /\d{1,2}\/\d{1,2}\s*\d{1,2}:\d{2}|\d{4}-\d{2}-\d{2}/.test(line)) {
             const m = line.match(/(\d{4}-\d{2}-\d{2}\s*\d{1,2}:\d{2}|\d{1,2}\/\d{1,2}\s*\d{1,2}:\d{2})/);
             if (m) createdAt = m[1];
           }
-          if (line.startsWith('→')) {
+          if (!situation && /^#\d{1,2}\./.test(line)) {
+            situation = line;
+          } else if (line.startsWith('→')) {
             signal = line.replace(/^→\s*/, '').trim();
           } else if (
             !/^\d{1,2}\/\d{1,2}/.test(line) &&
@@ -1472,6 +1496,7 @@
         pushItem({
           id: 'log_card_' + (idx + 1),
           createdAt,
+          situation: situation || lastSelectedSituation || '직접 입력',
           noise,
           evidence1: '',
           evidence2: '',
@@ -1584,7 +1609,7 @@
   window.addEventListener('DOMContentLoaded', syncBackupBar);
 })();
 </script>
-<!-- ▲ 노이즈 리셋 JSON 백업 (기본 10가지 + 생성 카드 통합 · 안드로이드/아이폰 호환) 끝 ▲ -->
+<!-- ▲ 노이즈 리셋 JSON 백업 (situation 포함 · 기본 10가지 + 생성 카드 통합 · 안드로이드/아이폰 호환) 끝 ▲ -->
 
 </body>
   
