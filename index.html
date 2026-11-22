@@ -1188,108 +1188,105 @@
 })();
 </script>
 <!-- ▲ 객관적 데이터 & 남길 시그널 여러 줄 자동확장(Textarea) 변환 끝 ▲ -->
-  <!-- ▼ 실시간 보이스 레벨 감도 보정 (귀속말 과민 반응 억제) 시작 ▼ -->
+ <!-- ▼ 실시간 보이스 레벨 감도 강제 보정 시작 ▼ -->
 <script>
 (function() {
-  // 튜닝 값: 귀속말(작은 입력)은 누르고, 실제 말소리 구간만 자연스럽게 반영
-  const NOISE_FLOOR = 0.18;      // 이 이하의 미세 소음/귀속말은 0% 근처로 억제 (0.04~0.10 조절 가능)
-  const CEILING_INPUT = 1.5;    // 입력 진폭 상한 기준 (값이 클수록 눈금이 덜 쉽게 꽉 참)
-  const GAMMA = 2.0;            // 1보다 크면 작은 소리 상승폭을 완만하게 누름
-  const SMOOTHING = 0.22;        // 0~1 사이, 낮을수록 순간 튐 없이 부드럽게 움직임
+  // 튜닝 값:
+  // WHISPER_CUT: 이 비율 이하의 작은 움직임은 0%로 눌러버림 (0.0 ~ 0.5)
+  // MAX_DISPLAY_PERCENT: 화면에서 한 번에 올라갈 수 있는 최대 눈금 제한 (예: 65면 꽉 참 방지)
+  // CURVE_POWER: 1보다 클수록 작은 소리 구간이 완만하게 눌림
+  const WHISPER_CUT = 0.25;
+  const MAX_DISPLAY_PERCENT = 65;
+  const CURVE_POWER = 2.4;
+  const SMOOTH_FACTOR = 0.18;
 
-  let smoothedLevel = 0;
+  let currentDisplayPct = 0;
 
-  function remapVoiceLevel(rawRatio) {
-    // rawRatio가 0~1 범위로 들어온다고 가정
-    const clamped = Math.max(0, Math.min(1, Number(rawRatio) || 0));
+  function normalizePercent(rawPct) {
+    const pct = Math.max(0, Math.min(100, Number(rawPct) || 0));
+    const ratio = pct / 100;
 
-    // 1. 노이즈 게이트: 귀속말·잔여 잡음 구간 감쇠
-    if (clamped <= NOISE_FLOOR) {
+    if (ratio <= WHISPER_CUT) {
       return 0;
     }
 
-    // 2. 유효 구간 정규화 및 비선형 감쇠(Gamma)
-    const normalized = Math.min(1, (clamped - NOISE_FLOOR) / Math.max(0.05, CEILING_INPUT - NOISE_FLOOR));
-    const curved = Math.pow(normalized, GAMMA) * 100;
-
-    return Math.max(0, Math.min(100, curved));
+    const adjusted = Math.pow((ratio - WHISPER_CUT) / (1 - WHISPER_CUT), CURVE_POWER);
+    return Math.min(MAX_DISPLAY_PERCENT, adjusted * MAX_DISPLAY_PERCENT);
   }
 
-  // 기존 코드가 스타일 width 또는 scaleX로 바 길이를 조절하는 경우를 감싸서 보정
-  function patchMeterElements() {
-    const step3Panel = Array.from(document.querySelectorAll('div, section')).find((el) =>
-      /실시간 보이스 레벨/.test(el.textContent || '') && el.querySelectorAll('div').length < 30
+  function findVoiceMeterBar() {
+    const labelEl = Array.from(document.querySelectorAll('*')).find((el) =>
+      el.children.length === 0 && /실시간 보이스 레벨/.test(el.textContent || '')
     );
-    if (!step3Panel) return;
+    const container = labelEl ? labelEl.parentElement : document.body;
 
-    const candidates = Array.from(step3Panel.querySelectorAll('div')).filter((el) => {
-      const rect = el.getBoundingClientRect();
-      const style = getComputedStyle(el);
-      const hasBg = style.backgroundColor && style.backgroundColor !== 'rgba(0, 0, 0, 0)' && style.backgroundColor !== 'transparent';
-      return hasBg && rect.height >= 4 && rect.height <= 36 && rect.width > 0 && rect.width <= step3Panel.clientWidth;
+    // 트랙(배경 바) 내부의 채움 바 후보 탐색
+    const bars = Array.from(container.querySelectorAll('div, span')).filter((el) => {
+      const r = el.getBoundingClientRect();
+      return r.height >= 4 && r.height <= 40 && r.width >= 0;
     });
 
-    // 트랙(배경 바)보다 좁거나 width가 동적으로 변하는 내부 채움 바 선택
-    const fillBar = candidates.find((el) => {
-      const w = parseFloat(el.style.width || '');
-      return !Number.isNaN(w) || (el.style.transform && el.style.transform.includes('scaleX'));
-    }) || candidates[candidates.length - 1];
+    // 가장 안쪽(자식이 적고 너비가 변하는) 바 우선 선택
+    return bars.reverse().find((el) => el.children.length === 0) || null;
+  }
 
-    if (!fillBar || fillBar.dataset.svLevelPatched === 'true') return;
-    fillBar.dataset.svLevelPatched = 'true';
+  function applyLevelClamp() {
+    const bar = findVoiceMeterBar();
+    if (!bar || bar.dataset.svClamped === 'true') return;
+    bar.dataset.svClamped = 'true';
 
-    // 부모 트랙 너비 기준으로 현재 비율 역산 후 보정
-    const parentWidth = (fillBar.parentElement && fillBar.parentElement.clientWidth) || 300;
+    const parentWidth = (bar.parentElement && bar.parentElement.clientWidth) || 300;
+    const widthDesc = Object.getOwnPropertyDescriptor(CSSStyleDeclaration.prototype, 'width');
+    const transformDesc = Object.getOwnPropertyDescriptor(CSSStyleDeclaration.prototype, 'transform');
 
-    const origWidthDesc = Object.getOwnPropertyDescriptor(CSSStyleDeclaration.prototype, 'width');
-    const origTransformDesc = Object.getOwnPropertyDescriptor(CSSStyleDeclaration.prototype, 'transform');
-
-    Object.defineProperty(fillBar.style, 'width', {
+    Object.defineProperty(bar.style, 'width', {
       configurable: true,
       get() {
-        return origWidthDesc.get.call(this);
+        return widthDesc.get.call(this);
       },
       set(val) {
-        let ratio = 0;
+        let rawPct = 0;
         if (typeof val === 'string' && val.endsWith('%')) {
-          ratio = parseFloat(val) / 100;
+          rawPct = parseFloat(val);
         } else if (typeof val === 'string' && val.endsWith('px')) {
-          ratio = parseFloat(val) / Math.max(1, parentWidth);
+          rawPct = (parseFloat(val) / Math.max(1, parentWidth)) * 100;
         }
-        const target = remapVoiceLevel(ratio);
-        smoothedLevel += (target - smoothedLevel) * SMOOTHING;
-        if (smoothedLevel < 0.8) smoothedLevel = 0;
-        origWidthDesc.set.call(this, smoothedLevel.toFixed(1) + '%');
+
+        const targetPct = normalizePercent(rawPct);
+        currentDisplayPct += (targetPct - currentDisplayPct) * SMOOTH_FACTOR;
+        if (currentDisplayPct < 0.5) currentDisplayPct = 0;
+
+        widthDesc.set.call(this, currentDisplayPct.toFixed(1) + '%');
       }
     });
 
-    Object.defineProperty(fillBar.style, 'transform', {
+    Object.defineProperty(bar.style, 'transform', {
       configurable: true,
       get() {
-        return origTransformDesc.get.call(this);
+        return transformDesc.get.call(this);
       },
       set(val) {
         if (typeof val === 'string' && /scaleX\(([^)]+)\)/.test(val)) {
-          const match = val.match(/scaleX\(([^)]+)\)/);
-          const ratio = parseFloat(match[1]) || 0;
-          const target = remapVoiceLevel(ratio) / 100;
-          smoothedLevel += (target - smoothedLevel) * SMOOTHING;
-          if (smoothedLevel < 0.008) smoothedLevel = 0;
-          const nextVal = val.replace(/scaleX\([^)]+\)/, 'scaleX(' + smoothedLevel.toFixed(3) + ')');
-          origTransformDesc.set.call(this, nextVal);
+          const scale = parseFloat(val.match(/scaleX\(([^)]+)\)/)[1]) || 0;
+          const targetPct = normalizePercent(scale * 100);
+          currentDisplayPct += (targetPct - currentDisplayPct) * SMOOTH_FACTOR;
+          if (currentDisplayPct < 0.005) currentDisplayPct = 0;
+
+          const clampedScale = (currentDisplayPct / 100).toFixed(3);
+          transformDesc.set.call(this, val.replace(/scaleX\([^)]+\)/, 'scaleX(' + clampedScale + ')'));
           return;
         }
-        origTransformDesc.set.call(this, val);
+        transformDesc.set.call(this, val);
       }
     });
   }
 
-  patchMeterElements();
-  const obs = new MutationObserver(patchMeterElements);
-  obs.observe(document.body, { childList: true, subtree: true });
+  applyLevelClamp();
+  const observer = new MutationObserver(applyLevelClamp);
+  observer.observe(document.body, { childList: true, subtree: true });
 })();
 </script>
-<!-- ▲ 실시간 보이스 레벨 감도 보정 끝 ▲ -->
+<!-- ▲ 실시간 보이스 레벨 감도 강제 보정 끝 ▲ -->
 </body>
   
 </html>
