@@ -1200,6 +1200,796 @@
 })();
 </script>
 <!-- ▲ 객관적 데이터 & 남길 시그널 여러 줄 자동확장(Textarea) 변환 끝 ▲ -->
+  <!-- ▼ 노이즈 리셋 통합 DB (기본 프리셋 + 사용자 항목 + 안드로이드/아이폰 JSON 호환) 시작 ▼ -->
+<style>
+  #svResetDbHub {
+    margin-top: 16px;
+    padding: 14px;
+    border-radius: 14px;
+    background: rgba(15, 23, 42, 0.72);
+    border: 1px solid rgba(148, 163, 184, 0.22);
+    text-align: left;
+  }
+  .sv-hub-header {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .sv-hub-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #f8fafc;
+  }
+  .sv-hub-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .sv-hub-btn {
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: 1px solid rgba(148, 163, 184, 0.35);
+    background: rgba(30, 41, 59, 0.9);
+    color: #e2e8f0;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .sv-hub-btn:hover {
+    border-color: #38bdf8;
+    color: #ffffff;
+  }
+  .sv-hub-btn.primary {
+    background: rgba(56, 189, 248, 0.18);
+    border-color: #38bdf8;
+    color: #7dd3fc;
+  }
+  .sv-hub-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .sv-filter-group {
+    display: flex;
+    gap: 6px;
+  }
+  .sv-filter-pill {
+    padding: 5px 10px;
+    border-radius: 999px;
+    border: 1px solid rgba(148, 163, 184, 0.28);
+    background: transparent;
+    color: #94a3b8;
+    font-size: 12px;
+    cursor: pointer;
+  }
+  .sv-filter-pill.active {
+    background: #38bdf8;
+    border-color: #38bdf8;
+    color: #0f172a;
+    font-weight: 700;
+  }
+  .sv-search-input {
+    flex: 1;
+    min-width: 160px;
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: 1px solid rgba(148, 163, 184, 0.3);
+    background: rgba(15, 23, 42, 0.9);
+    color: #f1f5f9;
+    font-size: 12px;
+  }
+  .sv-record-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-height: 520px;
+    overflow-y: auto;
+    padding-right: 2px;
+  }
+  .sv-record-card {
+    padding: 12px;
+    border-radius: 12px;
+    background: rgba(30, 41, 59, 0.65);
+    border: 1px solid rgba(148, 163, 184, 0.18);
+  }
+  .sv-record-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    font-size: 12px;
+    color: #94a3b8;
+  }
+  .sv-badge-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .sv-source-badge {
+    padding: 2px 7px;
+    border-radius: 999px;
+    font-size: 10.5px;
+    font-weight: 700;
+    background: rgba(148, 163, 184, 0.18);
+    color: #cbd5e1;
+  }
+  .sv-source-badge.custom {
+    background: rgba(56, 189, 248, 0.18);
+    color: #7dd3fc;
+  }
+  .sv-status-badge {
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .sv-status-badge.done {
+    background: rgba(34, 197, 94, 0.18);
+    color: #4ade80;
+    border: 1px solid rgba(74, 222, 128, 0.4);
+  }
+  .sv-status-badge.pending {
+    background: rgba(250, 204, 21, 0.15);
+    color: #facc15;
+    border: 1px solid rgba(250, 204, 21, 0.35);
+  }
+  .sv-field-row {
+    margin-bottom: 6px;
+    font-size: 12.5px;
+    line-height: 1.45;
+  }
+  .sv-field-label {
+    display: inline-block;
+    font-weight: 700;
+    margin-right: 6px;
+    color: #cbd5e1;
+  }
+  .sv-noise-text {
+    color: #fda4af;
+  }
+  .sv-signal-text {
+    color: #34d399;
+    font-weight: 600;
+  }
+  .sv-ev-list {
+    margin: 4px 0 6px 0;
+    padding-left: 18px;
+    color: #cbd5e1;
+    font-size: 12px;
+  }
+  .sv-ev-list li {
+    margin-bottom: 2px;
+  }
+  .sv-card-foot {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 6px;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(148, 163, 184, 0.14);
+  }
+  .sv-mini-action {
+    padding: 4px 8px;
+    border-radius: 6px;
+    border: 1px solid rgba(148, 163, 184, 0.28);
+    background: rgba(15, 23, 42, 0.75);
+    color: #e2e8f0;
+    font-size: 11.5px;
+    cursor: pointer;
+  }
+  .sv-edit-box {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 6px;
+  }
+  .sv-edit-input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 6px 8px;
+    border-radius: 8px;
+    border: 1px solid rgba(56, 189, 248, 0.45);
+    background: rgba(15, 23, 42, 0.95);
+    color: #f8fafc;
+    font-size: 12px;
+    font-family: inherit;
+  }
+</style>
+
+<script>
+(function() {
+  const DB_NAME = 'STAGE_VOICE_RESET_DB';
+  const DB_VERSION = 1;
+  const STORE_NAME = 'reset_records';
+  const LOCAL_MIRROR_KEY = 'stage_voice_reset_records_v1';
+  const PRESET_SEEDED_KEY = 'stage_voice_builtin_seeded_v1';
+
+  let dbInstance = null;
+  let activeFilter = 'all';
+  let searchKeyword = '';
+  let editingId = null;
+
+  function openResetDB() {
+    return new Promise((resolve, reject) => {
+      if (dbInstance) return resolve(dbInstance);
+      if (!('indexedDB' in window)) return resolve(null);
+
+      const req = indexedDB.open(DB_NAME, DB_VERSION);
+      req.onupgradeneeded = (e) => {
+        const db = e.target.result;
+        if (!db.objectStoreNames.contains(STORE_NAME)) {
+          const store = db.createObjectStore(STORE_NAME, { keyPath: 'id' });
+          store.createIndex('createdAt', 'createdAt', { unique: false });
+          store.createIndex('completed', 'completed', { unique: false });
+          store.createIndex('source', 'source', { unique: false });
+        }
+      };
+      req.onsuccess = () => {
+        dbInstance = req.result;
+        resolve(dbInstance);
+      };
+      req.onerror = () => reject(req.error);
+    });
+  }
+
+  function readLocalMirror() {
+    try {
+      const raw = localStorage.getItem(LOCAL_MIRROR_KEY);
+      const parsed = raw ? JSON.parse(raw) : [];
+      return Array.isArray(parsed) ? parsed : [];
+    } catch (_) {
+      return [];
+    }
+  }
+
+  function writeLocalMirror(records) {
+    try {
+      localStorage.setItem(LOCAL_MIRROR_KEY, JSON.stringify(records));
+    } catch (_) {}
+  }
+
+  async function getAllRecords() {
+    const mirror = readLocalMirror();
+    try {
+      const db = await openResetDB();
+      if (!db) return mirror;
+
+      return await new Promise((resolve) => {
+        const tx = db.transaction(STORE_NAME, 'readonly');
+        const store = tx.objectStore(STORE_NAME);
+        const req = store.getAll();
+        req.onsuccess = () => {
+          const list = Array.isArray(req.result) ? req.result : [];
+          if (list.length === 0 && mirror.length > 0) {
+            resolve(mirror);
+          } else {
+            writeLocalMirror(list);
+            resolve(list);
+          }
+        };
+        req.onerror = () => resolve(mirror);
+      });
+    } catch (_) {
+      return mirror;
+    }
+  }
+
+  async function putRecord(record) {
+    const normalized = {
+      id: String(record.id),
+      source: record.source === 'builtin' ? 'builtin' : 'custom',
+      createdAt: String(record.createdAt || formatNow()),
+      noise: String(record.noise || ''),
+      evidence1: String(record.evidence1 || ''),
+      evidence2: String(record.evidence2 || ''),
+      evidence3: String(record.evidence3 || ''),
+      signal: String(record.signal || ''),
+      completed: Boolean(record.completed)
+    };
+
+    const current = readLocalMirror();
+    const idx = current.findIndex((r) => r.id === normalized.id);
+    if (idx >= 0) current[idx] = normalized;
+    else current.push(normalized);
+    writeLocalMirror(current);
+
+    try {
+      const db = await openResetDB();
+      if (!db) return;
+      await new Promise((resolve, reject) => {
+        const tx = db.transaction(STORE_NAME, 'readwrite');
+        tx.objectStore(STORE_NAME).put(normalized);
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => reject(tx.error);
+      });
+    } catch (_) {}
+  }
+
+  async function deleteRecordById(id) {
+    const filtered = readLocalMirror().filter((r) => r.id !== id);
+    writeLocalMirror(filtered);
+
+    try {
+      const db = await openResetDB();
+      if (!db) return;
+      await new Promise((resolve, reject) => {
+        const tx = db.transaction(STORE_NAME, 'readwrite');
+        tx.objectStore(STORE_NAME).delete(id);
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => reject(tx.error);
+      });
+    } catch (_) {}
+  }
+
+  function formatNow() {
+    const d = new Date();
+    const pad = (n) => String(n).padStart(2, '0');
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  }
+
+  // 앱에 이미 내장된 상황별 예시/프리셋을 DOM 또는 전역 데이터에서 자동 수집
+  function collectBuiltinPresetsFromApp() {
+    const presets = [];
+
+    // 1) 전역 배열/객체 후보 탐색
+    const globalKeys = Object.keys(window);
+    for (const key of globalKeys) {
+      if (/preset|noise|scenario|reset/i.test(key) && Array.isArray(window[key])) {
+        window[key].forEach((item, index) => {
+          if (item && typeof item === 'object') {
+            const evList = Array.isArray(item.evidence)
+              ? item.evidence
+              : Array.isArray(item.evidences)
+              ? item.evidences
+              : Array.isArray(item.facts)
+              ? item.facts
+              : [];
+            const noise = item.noise || item.anxiety || item.title || '';
+            const signal = item.signal || item.coreSignal || item.affirmation || '';
+            if (noise || signal || evList.length) {
+              presets.push({
+                id: `builtin_preset_${index + 1}`,
+                source: 'builtin',
+                createdAt: '기본 내장 프리셋',
+                noise: String(noise),
+                evidence1: String(item.evidence1 || evList[0] || ''),
+                evidence2: String(item.evidence2 || evList[1] || ''),
+                evidence3: String(item.evidence3 || evList[2] || ''),
+                signal: String(signal),
+                completed: false
+              });
+            }
+          }
+        });
+      }
+    }
+
+    // 2) 프리셋 버튼/칩/카드 텍스트 기반 추출
+    if (presets.length === 0) {
+      const chips = Array.from(document.querySelectorAll('button, [role="button"], .preset-item, .chip')).filter((el) => {
+        if (el.closest('#svResetDbHub')) return false;
+        const txt = (el.innerText || '').trim();
+        return txt.length >= 6 && txt.length <= 120 && !/탭|호흡|보이스|로그|재생|완료|삭제|추가|백업|가져오기/.test(txt);
+      });
+
+      chips.slice(0, 12).forEach((el, idx) => {
+        const txt = (el.innerText || '').trim();
+        presets.push({
+          id: `builtin_chip_${idx + 1}`,
+          source: 'builtin',
+          createdAt: '기본 내장 프리셋',
+          noise: txt,
+          evidence1: '현재 상황의 객관적 사실을 한 가지씩 차분히 확인한다.',
+          evidence2: '감정적 추측과 실제 근거를 구분해 본다.',
+          evidence3: '내가 지금 당장 통제할 수 있는 말과 호흡에 집중한다.',
+          signal: '나는 준비된 핵심만 차분하고 명료하게 전달한다.',
+          completed: false
+        });
+      });
+    }
+
+    return presets;
+  }
+
+  async function seedBuiltinPresetsOnce() {
+    const existing = await getAllRecords();
+    const hasBuiltin = existing.some((r) => r.source === 'builtin');
+    if (hasBuiltin && localStorage.getItem(PRESET_SEEDED_KEY) === 'true') {
+      return;
+    }
+
+    const detected = collectBuiltinPresetsFromApp();
+    for (const preset of detected) {
+      const already = existing.find((r) => r.id === preset.id);
+      if (!already) {
+        await putRecord(preset);
+      }
+    }
+    localStorage.setItem(PRESET_SEEDED_KEY, 'true');
+  }
+
+  function extractCurrentNoiseForm() {
+    const inputs = Array.from(document.body.querySelectorAll('textarea, input[type="text"]')).filter((el) => {
+      if (el.closest('#svResetDbHub')) return false;
+      const r = el.getBoundingClientRect();
+      return r.width > 40 && r.height > 16;
+    });
+
+    const values = inputs.map((el) => (el.value || '').trim()).filter(Boolean);
+    if (values.length === 0) return null;
+
+    const noise = values[0] || '';
+    const evidence1 = values[1] || '';
+    const evidence2 = values[2] || '';
+    const evidence3 = values[3] || '';
+    const signal = values[4] || values[values.length - 1] || '';
+
+    if (!noise && !evidence1 && !evidence2 && !evidence3 && !signal) return null;
+
+    return {
+      id: 'custom_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
+      source: 'custom',
+      createdAt: formatNow(),
+      noise,
+      evidence1,
+      evidence2,
+      evidence3,
+      signal,
+      completed: false
+    };
+  }
+
+  document.addEventListener('click', async (e) => {
+    const btn = e.target.closest('button');
+    if (!btn || btn.closest('#svResetDbHub')) return;
+    const txt = (btn.innerText || '').trim();
+
+    if (/저장|리셋|기록|등록|시그널/.test(txt)) {
+      setTimeout(async () => {
+        const draft = extractCurrentNoiseForm();
+        if (draft && (draft.noise || draft.signal)) {
+          const existing = await getAllRecords();
+          const duplicate = existing.find(
+            (item) => item.noise === draft.noise && item.signal === draft.signal && item.createdAt.slice(0, 16) === draft.createdAt.slice(0, 16)
+          );
+          if (!duplicate) {
+            await putRecord(draft);
+            await renderHub();
+          }
+        }
+      }, 180);
+    }
+
+    if (/실천\s*성공\s*완료/.test(txt)) {
+      setTimeout(async () => {
+        const list = await getAllRecords();
+        const customOrLatest = [...list].reverse().find((r) => r.source === 'custom') || list[list.length - 1];
+        if (customOrLatest) {
+          await putRecord({ ...customOrLatest, completed: true });
+          await renderHub();
+        }
+      }, 180);
+    }
+  });
+
+  // 안드로이드 / 아이폰 / PC 모두 호환되는 JSON 저장 함수
+  async function exportRecordsToJSON() {
+    await seedBuiltinPresetsOnce();
+    const records = await getAllRecords();
+    if (!records.length) {
+      alert('내보낼 노이즈 리셋 데이터가 없습니다.');
+      return;
+    }
+
+    const fileName = `stage_voice_reset_all_${new Date().toISOString().slice(0, 10)}.json`;
+    const jsonString = JSON.stringify(records, null, 2);
+    const blob = new Blob([jsonString], { type: 'application/json;charset=utf-8;' });
+
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    const isAndroid = /Android/i.test(navigator.userAgent);
+
+    // 1) 아이폰(Safari / 홈 화면 앱): 공유 시트('파일에 저장') 우선
+    if (isIOS && navigator.share && navigator.canShare) {
+      try {
+        const file = new File([blob], fileName, { type: 'application/json' });
+        if (navigator.canShare({ files: [file] })) {
+          await navigator.share({
+            files: [file],
+            title: 'STAGE VOICE PRO JSON 백업'
+          });
+          return;
+        }
+      } catch (err) {
+        if (err && err.name === 'AbortError') return;
+      }
+    }
+
+    // 2) PC(Chrome/Edge 등)에서 File System Access API 지원 시
+    if (!isAndroid && !isIOS && window.showSaveFilePicker) {
+      try {
+        const handle = await window.showSaveFilePicker({
+          suggestedName: fileName,
+          types: [{ description: 'JSON 백업 파일', accept: { 'application/json': ['.json'] } }]
+        });
+        const writable = await handle.createWritable();
+        await writable.write(blob);
+        await writable.close();
+        return;
+      } catch (err) {
+        if (err && err.name === 'AbortError') return;
+      }
+    }
+
+    // 3) 안드로이드 및 일반 브라우저: 직접 다운로드 시도 후 실패 시 공유 시트 폴백
+    try {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = fileName;
+      a.style.display = 'none';
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => {
+        a.remove();
+        URL.revokeObjectURL(url);
+      }, 1500);
+    } catch (_) {
+      if (navigator.share && navigator.canShare) {
+        const file = new File([blob], fileName, { type: 'application/json' });
+        if (navigator.canShare({ files: [file] })) {
+          await navigator.share({ files: [file], title: 'STAGE VOICE PRO JSON 백업' });
+        }
+      }
+    }
+  }
+
+  async function importRecordsFromJSON(file) {
+    if (!file) return;
+    try {
+      const text = await file.text();
+      const parsed = JSON.parse(text);
+      if (!Array.isArray(parsed)) {
+        alert('올바른 JSON 백업 배열 형식이 아닙니다.');
+        return;
+      }
+      for (const item of parsed) {
+        if (item && item.id) {
+          await putRecord({
+            id: String(item.id),
+            source: item.source === 'builtin' ? 'builtin' : 'custom',
+            createdAt: String(item.createdAt || formatNow()),
+            noise: String(item.noise || ''),
+            evidence1: String(item.evidence1 || ''),
+            evidence2: String(item.evidence2 || ''),
+            evidence3: String(item.evidence3 || ''),
+            signal: String(item.signal || ''),
+            completed: Boolean(item.completed)
+          });
+        }
+      }
+      await renderHub();
+      alert(`${parsed.length}건의 데이터(기본 프리셋 + 사용자 항목)를 반영했습니다.`);
+    } catch (_) {
+      alert('JSON 파일을 읽는 중 오류가 발생했습니다.');
+    }
+  }
+
+  function findLogTabContainer() {
+    const candidates = Array.from(document.querySelectorAll('div, section'));
+    return candidates.find((el) => {
+      const txt = el.textContent || '';
+      const hasLogHeader = /나의 멘탈 리셋 & 성공 로그|누적 노이즈 리셋|실천 성공 체크/.test(txt);
+      const isReasonableSize = el.querySelectorAll('div').length >= 3 && el.querySelectorAll('div').length < 80;
+      return hasLogHeader && isReasonableSize;
+    }) || null;
+  }
+
+  async function renderHub() {
+    const container = findLogTabContainer();
+    if (!container) return;
+
+    await seedBuiltinPresetsOnce();
+
+    let hub = document.getElementById('svResetDbHub');
+    if (!hub) {
+      hub = document.createElement('div');
+      hub.id = 'svResetDbHub';
+      container.appendChild(hub);
+    }
+
+    const allRecords = await getAllRecords();
+    const filtered = allRecords.filter((r) => {
+      if (activeFilter === 'done' && !r.completed) return false;
+      if (activeFilter === 'pending' && r.completed) return false;
+      if (searchKeyword.trim()) {
+        const q = searchKeyword.trim().toLowerCase();
+        const combined = [r.createdAt, r.source, r.noise, r.evidence1, r.evidence2, r.evidence3, r.signal].join(' ').toLowerCase();
+        if (!combined.includes(q)) return false;
+      }
+      return true;
+    });
+
+    const totalCount = allRecords.length;
+    const customCount = allRecords.filter((r) => r.source === 'custom').length;
+    const doneCount = allRecords.filter((r) => r.completed).length;
+
+    hub.innerHTML = `
+      <div class="sv-hub-header">
+        <div class="sv-hub-title">노이즈 리셋 통합 DB (총 ${totalCount}건 · 내 추가 ${customCount}건 · 완료 ${doneCount}건)</div>
+        <div class="sv-hub-actions">
+          <button type="button" class="sv-hub-btn primary" id="svBtnNewRecord">+ 새 항목 추가</button>
+          <button type="button" class="sv-hub-btn" id="svBtnExportJson">JSON 백업</button>
+          <button type="button" class="sv-hub-btn" id="svBtnImportJson">JSON 가져오기</button>
+          <input type="file" id="svFileImportJson" accept=".json,application/json" style="display:none;" />
+        </div>
+      </div>
+
+      <div class="sv-hub-toolbar">
+        <div class="sv-filter-group">
+          <button type="button" class="sv-filter-pill ${activeFilter === 'all' ? 'active' : ''}" data-filter="all">전체</button>
+          <button type="button" class="sv-filter-pill ${activeFilter === 'done' ? 'active' : ''}" data-filter="done">실천 성공 완료</button>
+          <button type="button" class="sv-filter-pill ${activeFilter === 'pending' ? 'active' : ''}" data-filter="pending">미완료</button>
+        </div>
+        <input type="text" class="sv-search-input" id="svSearchInput" placeholder="노이즈, 객관적 데이터, 시그널, 기본/추가 검색..." value="${searchKeyword.replace(/"/g, '&quot;')}" />
+      </div>
+
+      <div class="sv-record-list" id="svRecordList">
+        ${filtered.length === 0 ? `<div style="font-size:12px; color:#94a3b8; padding:12px 0;">표시할 항목이 없습니다. 상단의 [+ 새 항목 추가]로 바로 남길 수 있습니다.</div>` : ''}
+        ${filtered.map((rec) => {
+          if (editingId === rec.id) {
+            return `
+              <div class="sv-record-card" data-id="${rec.id}">
+                <div class="sv-record-top"><span>${rec.createdAt}</span><span>수정 중</span></div>
+                <div class="sv-edit-box">
+                  <input type="text" class="sv-edit-input" data-edit="noise" placeholder="노이즈" value="${(rec.noise || '').replace(/"/g, '&quot;')}" />
+                  <input type="text" class="sv-edit-input" data-edit="evidence1" placeholder="객관적 데이터 1" value="${(rec.evidence1 || '').replace(/"/g, '&quot;')}" />
+                  <input type="text" class="sv-edit-input" data-edit="evidence2" placeholder="객관적 데이터 2" value="${(rec.evidence2 || '').replace(/"/g, '&quot;')}" />
+                  <input type="text" class="sv-edit-input" data-edit="evidence3" placeholder="객관적 데이터 3" value="${(rec.evidence3 || '').replace(/"/g, '&quot;')}" />
+                  <input type="text" class="sv-edit-input" data-edit="signal" placeholder="남길 시그널" value="${(rec.signal || '').replace(/"/g, '&quot;')}" />
+                  <label style="font-size:12px; color:#e2e8f0; display:flex; align-items:center; gap:6px;">
+                    <input type="checkbox" data-edit="completed" ${rec.completed ? 'checked' : ''} /> 실천 성공 완료
+                  </label>
+                </div>
+                <div class="sv-card-foot">
+                  <button type="button" class="sv-mini-action" data-action="save-edit" data-id="${rec.id}">저장</button>
+                  <button type="button" class="sv-mini-action" data-action="cancel-edit" data-id="${rec.id}">취소</button>
+                </div>
+              </div>
+            `;
+          }
+
+          return `
+            <div class="sv-record-card" data-id="${rec.id}">
+              <div class="sv-record-top">
+                <span>${rec.createdAt}</span>
+                <div class="sv-badge-row">
+                  <span class="sv-source-badge ${rec.source === 'custom' ? 'custom' : ''}">${rec.source === 'custom' ? '사용자 추가' : '기본 내장'}</span>
+                  <span class="sv-status-badge ${rec.completed ? 'done' : 'pending'}">${rec.completed ? '실천 성공 완료' : '미완료'}</span>
+                </div>
+              </div>
+              <div class="sv-field-row">
+                <span class="sv-field-label">❌ 노이즈:</span>
+                <span class="sv-noise-text">${rec.noise || '-'}</span>
+              </div>
+              <div class="sv-field-row">
+                <span class="sv-field-label">📊 객관적 데이터 3가지:</span>
+                <ul class="sv-ev-list">
+                  <li>${rec.evidence1 || '-'}</li>
+                  <li>${rec.evidence2 || '-'}</li>
+                  <li>${rec.evidence3 || '-'}</li>
+                </ul>
+              </div>
+              <div class="sv-field-row">
+                <span class="sv-field-label">📡 남길 시그널:</span>
+                <span class="sv-signal-text">${rec.signal || '-'}</span>
+              </div>
+              <div class="sv-card-foot">
+                <button type="button" class="sv-mini-action" data-action="toggle-done" data-id="${rec.id}">${rec.completed ? '완료 해제' : '실천 성공 완료'}</button>
+                <button type="button" class="sv-mini-action" data-action="edit" data-id="${rec.id}">수정</button>
+                <button type="button" class="sv-mini-action" data-action="delete" data-id="${rec.id}">삭제</button>
+              </div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    `;
+
+    hub.querySelector('#svBtnNewRecord').onclick = async () => {
+      const newRec = {
+        id: 'custom_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
+        source: 'custom',
+        createdAt: formatNow(),
+        noise: '',
+        evidence1: '',
+        evidence2: '',
+        evidence3: '',
+        signal: '',
+        completed: false
+      };
+      await putRecord(newRec);
+      editingId = newRec.id;
+      await renderHub();
+    };
+
+    hub.querySelector('#svBtnExportJson').onclick = exportRecordsToJSON;
+
+    const fileInput = hub.querySelector('#svFileImportJson');
+    hub.querySelector('#svBtnImportJson').onclick = () => fileInput.click();
+    fileInput.onchange = (ev) => {
+      if (ev.target.files && ev.target.files[0]) {
+        importRecordsFromJSON(ev.target.files[0]);
+      }
+    };
+
+    hub.querySelectorAll('.sv-filter-pill').forEach((pill) => {
+      pill.onclick = async () => {
+        activeFilter = pill.dataset.filter;
+        await renderHub();
+      };
+    });
+
+    const searchEl = hub.querySelector('#svSearchInput');
+    searchEl.oninput = (ev) => {
+      searchKeyword = ev.target.value;
+      renderHub();
+    };
+
+    hub.querySelectorAll('[data-action]').forEach((btn) => {
+      btn.onclick = async () => {
+        const action = btn.dataset.action;
+        const id = btn.dataset.id;
+        const list = await getAllRecords();
+        const target = list.find((item) => item.id === id);
+        if (!target) return;
+
+        if (action === 'toggle-done') {
+          await putRecord({ ...target, source: 'custom', completed: !target.completed });
+          await renderHub();
+        } else if (action === 'delete') {
+          await deleteRecordById(id);
+          await renderHub();
+        } else if (action === 'edit') {
+          editingId = id;
+          await renderHub();
+        } else if (action === 'cancel-edit') {
+          editingId = null;
+          await renderHub();
+        } else if (action === 'save-edit') {
+          const card = hub.querySelector(`.sv-record-card[data-id="${id}"]`);
+          const updated = {
+            ...target,
+            source: 'custom',
+            noise: card.querySelector('[data-edit="noise"]').value.trim(),
+            evidence1: card.querySelector('[data-edit="evidence1"]').value.trim(),
+            evidence2: card.querySelector('[data-edit="evidence2"]').value.trim(),
+            evidence3: card.querySelector('[data-edit="evidence3"]').value.trim(),
+            signal: card.querySelector('[data-edit="signal"]').value.trim(),
+            completed: card.querySelector('[data-edit="completed"]').checked
+          };
+          editingId = null;
+          await putRecord(updated);
+          await renderHub();
+        }
+      };
+    });
+  }
+
+  renderHub();
+  const observer = new MutationObserver(() => {
+    if (!document.getElementById('svResetDbHub')) {
+      renderHub();
+    }
+  });
+  observer.observe(document.body, { childList: true, subtree: true });
+})();
+</script>
+<!-- ▲ 노이즈 리셋 통합 DB (기본 프리셋 + 사용자 항목 + 안드로이드/아이폰 JSON 호환) 끝 ▲ -->
 
 </body>
   
