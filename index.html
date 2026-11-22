@@ -1094,6 +1094,100 @@
 })();
 </script>
 <!-- ▲ 스마트 앱 설치 안내 배너 끝 ▲ -->
+  <!-- ▼ 객관적 데이터 & 남길 시그널 여러 줄 자동확장(Textarea) 변환 시작 ▼ -->
+<style>
+  .sv-multiline-box {
+    width: 100%;
+    box-sizing: border-box;
+    min-height: 52px;
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: 1px solid rgba(148, 163, 184, 0.22);
+    background: rgba(15, 23, 42, 0.72);
+    color: #f1f5f9;
+    font-family: inherit;
+    font-size: 14px;
+    line-height: 1.5;
+    word-break: keep-all;
+    resize: none;
+    overflow: hidden;
+    display: block;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .sv-multiline-box:focus {
+    outline: none;
+    border-color: #38bdf8;
+    box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2);
+  }
+</style>
+
+<script>
+(function() {
+  function autoResize(ta) {
+    ta.style.height = 'auto';
+    ta.style.height = Math.max(52, ta.scrollHeight) + 'px';
+  }
+
+  function upgradeInputsToTextarea() {
+    // 3. 노이즈 리셋 패널 안의 모든 한 줄짜리 text input 찾기
+    const textInputs = document.querySelectorAll('input[type="text"], input:not([type])');
+
+    textInputs.forEach((input) => {
+      if (input.dataset.svUpgraded === 'true') return;
+
+      const ta = document.createElement('textarea');
+      ta.className = (input.className ? input.className + ' ' : '') + 'sv-multiline-box';
+      if (input.id) ta.id = input.id;
+      if (input.name) ta.name = input.name;
+      if (input.placeholder) ta.placeholder = input.placeholder;
+      ta.rows = 2;
+      ta.value = input.value || '';
+
+      // 기존 JS 코드가 input.value를 읽거나 바꿀 때 그대로 연동되도록 처리
+      input.dataset.svUpgraded = 'true';
+      input.style.display = 'none';
+      input.insertAdjacentElement('afterend', ta);
+
+      // 사용자가 직접 수정할 때 원본 input에도 값 동기화
+      ta.addEventListener('input', () => {
+        input.value = ta.value;
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+        input.dispatchEvent(new Event('change', { bubbles: true }));
+        autoResize(ta);
+      });
+
+      // 버튼(#1~#10) 클릭으로 원본 input.value가 바뀔 때 감지하여 textarea에 반영
+      const descriptor = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value');
+      Object.defineProperty(input, 'value', {
+        get() {
+          return descriptor.get.call(this);
+        },
+        set(val) {
+          descriptor.set.call(this, val);
+          ta.value = val || '';
+          autoResize(ta);
+        }
+      });
+
+      requestAnimationFrame(() => autoResize(ta));
+    });
+  }
+
+  // 초기 실행 및 상황 버튼(#1~#10) 클릭 시 높이 재계산
+  upgradeInputsToTextarea();
+  document.addEventListener('click', () => {
+    setTimeout(() => {
+      document.querySelectorAll('.sv-multiline-box').forEach(autoResize);
+    }, 30);
+  });
+
+  window.addEventListener('resize', () => {
+    document.querySelectorAll('.sv-multiline-box').forEach(autoResize);
+  });
+})();
+</script>
+<!-- ▲ 객관적 데이터 & 남길 시그널 여러 줄 자동확장(Textarea) 변환 끝 ▲ -->
 </body>
   
 </html>
