@@ -1188,6 +1188,108 @@
 })();
 </script>
 <!-- ▲ 객관적 데이터 & 남길 시그널 여러 줄 자동확장(Textarea) 변환 끝 ▲ -->
+  <!-- ▼ 실시간 보이스 레벨 감도 보정 (귀속말 과민 반응 억제) 시작 ▼ -->
+<script>
+(function() {
+  // 튜닝 값: 귀속말(작은 입력)은 누르고, 실제 말소리 구간만 자연스럽게 반영
+  const NOISE_FLOOR = 0.06;      // 이 이하의 미세 소음/귀속말은 0% 근처로 억제 (0.04~0.10 조절 가능)
+  const CEILING_INPUT = 0.55;    // 입력 진폭 상한 기준 (값이 클수록 눈금이 덜 쉽게 꽉 참)
+  const GAMMA = 1.65;            // 1보다 크면 작은 소리 상승폭을 완만하게 누름
+  const SMOOTHING = 0.22;        // 0~1 사이, 낮을수록 순간 튐 없이 부드럽게 움직임
+
+  let smoothedLevel = 0;
+
+  function remapVoiceLevel(rawRatio) {
+    // rawRatio가 0~1 범위로 들어온다고 가정
+    const clamped = Math.max(0, Math.min(1, Number(rawRatio) || 0));
+
+    // 1. 노이즈 게이트: 귀속말·잔여 잡음 구간 감쇠
+    if (clamped <= NOISE_FLOOR) {
+      return 0;
+    }
+
+    // 2. 유효 구간 정규화 및 비선형 감쇠(Gamma)
+    const normalized = Math.min(1, (clamped - NOISE_FLOOR) / Math.max(0.05, CEILING_INPUT - NOISE_FLOOR));
+    const curved = Math.pow(normalized, GAMMA) * 100;
+
+    return Math.max(0, Math.min(100, curved));
+  }
+
+  // 기존 코드가 스타일 width 또는 scaleX로 바 길이를 조절하는 경우를 감싸서 보정
+  function patchMeterElements() {
+    const step3Panel = Array.from(document.querySelectorAll('div, section')).find((el) =>
+      /실시간 보이스 레벨/.test(el.textContent || '') && el.querySelectorAll('div').length < 30
+    );
+    if (!step3Panel) return;
+
+    const candidates = Array.from(step3Panel.querySelectorAll('div')).filter((el) => {
+      const rect = el.getBoundingClientRect();
+      const style = getComputedStyle(el);
+      const hasBg = style.backgroundColor && style.backgroundColor !== 'rgba(0, 0, 0, 0)' && style.backgroundColor !== 'transparent';
+      return hasBg && rect.height >= 4 && rect.height <= 36 && rect.width > 0 && rect.width <= step3Panel.clientWidth;
+    });
+
+    // 트랙(배경 바)보다 좁거나 width가 동적으로 변하는 내부 채움 바 선택
+    const fillBar = candidates.find((el) => {
+      const w = parseFloat(el.style.width || '');
+      return !Number.isNaN(w) || (el.style.transform && el.style.transform.includes('scaleX'));
+    }) || candidates[candidates.length - 1];
+
+    if (!fillBar || fillBar.dataset.svLevelPatched === 'true') return;
+    fillBar.dataset.svLevelPatched = 'true';
+
+    // 부모 트랙 너비 기준으로 현재 비율 역산 후 보정
+    const parentWidth = (fillBar.parentElement && fillBar.parentElement.clientWidth) || 300;
+
+    const origWidthDesc = Object.getOwnPropertyDescriptor(CSSStyleDeclaration.prototype, 'width');
+    const origTransformDesc = Object.getOwnPropertyDescriptor(CSSStyleDeclaration.prototype, 'transform');
+
+    Object.defineProperty(fillBar.style, 'width', {
+      configurable: true,
+      get() {
+        return origWidthDesc.get.call(this);
+      },
+      set(val) {
+        let ratio = 0;
+        if (typeof val === 'string' && val.endsWith('%')) {
+          ratio = parseFloat(val) / 100;
+        } else if (typeof val === 'string' && val.endsWith('px')) {
+          ratio = parseFloat(val) / Math.max(1, parentWidth);
+        }
+        const target = remapVoiceLevel(ratio);
+        smoothedLevel += (target - smoothedLevel) * SMOOTHING;
+        if (smoothedLevel < 0.8) smoothedLevel = 0;
+        origWidthDesc.set.call(this, smoothedLevel.toFixed(1) + '%');
+      }
+    });
+
+    Object.defineProperty(fillBar.style, 'transform', {
+      configurable: true,
+      get() {
+        return origTransformDesc.get.call(this);
+      },
+      set(val) {
+        if (typeof val === 'string' && /scaleX\(([^)]+)\)/.test(val)) {
+          const match = val.match(/scaleX\(([^)]+)\)/);
+          const ratio = parseFloat(match[1]) || 0;
+          const target = remapVoiceLevel(ratio) / 100;
+          smoothedLevel += (target - smoothedLevel) * SMOOTHING;
+          if (smoothedLevel < 0.008) smoothedLevel = 0;
+          const nextVal = val.replace(/scaleX\([^)]+\)/, 'scaleX(' + smoothedLevel.toFixed(3) + ')');
+          origTransformDesc.set.call(this, nextVal);
+          return;
+        }
+        origTransformDesc.set.call(this, val);
+      }
+    });
+  }
+
+  patchMeterElements();
+  const obs = new MutationObserver(patchMeterElements);
+  obs.observe(document.body, { childList: true, subtree: true });
+})();
+</script>
+<!-- ▲ 실시간 보이스 레벨 감도 보정 끝 ▲ -->
 </body>
   
 </html>
