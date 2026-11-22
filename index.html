@@ -1094,107 +1094,116 @@
 })();
 </script>
 <!-- ▲ 스마트 앱 설치 안내 배너 끝 ▲ -->
-<!-- ▼ 노이즈 제거 배지 모션 스크립트 (노이즈 본문 텍스트 유지) 시작 ▼ -->
+<!-- ▼ DETECTED NOISE 간결화 & 단일 ❌ 배지 모션 시작 ▼ -->
 <style>
-  /* '틀렸음 / 제거할 노이즈' 움직이는 ❌ 배지 모션 */
-  .sv-wrong-badge {
+  /* 제목 옆에 딱 1개만 붙는 깔끔한 움직이는 ❌ 배지 */
+  .sv-clean-wrong-badge {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-width: 22px;
-    height: 22px;
-    padding: 0 5px;
-    margin-right: 6px;
-    border-radius: 999px;
-    background: rgba(239, 68, 68, 0.16);
-    border: 1px solid rgba(248, 113, 113, 0.55);
+    width: 18px;
+    height: 18px;
+    margin-left: 6px;
+    border-radius: 50%;
+    background: rgba(239, 68, 68, 0.18);
+    border: 1px solid rgba(248, 113, 113, 0.6);
     color: #f87171;
-    font-size: 12px;
-    font-weight: 800;
+    font-size: 10px;
     line-height: 1;
     vertical-align: middle;
-    animation: svWrongShakePulse 1.35s ease-in-out infinite;
+    animation: svCleanPulse 1.6s ease-in-out infinite;
     user-select: none;
   }
 
-  .sv-wrong-badge--header {
-    margin-left: 6px;
-    margin-right: 4px;
-    background: rgba(239, 68, 68, 0.22);
-    border-color: rgba(248, 113, 113, 0.75);
-  }
-
-  @keyframes svWrongShakePulse {
+  @keyframes svCleanPulse {
     0%, 100% {
-      transform: translateX(0) scale(1) rotate(0deg);
-      box-shadow: 0 0 0 0 rgba(248, 113, 113, 0.35);
+      transform: scale(1) rotate(0deg);
     }
-    20% {
-      transform: translateX(-2.5px) scale(1.08) rotate(-8deg);
+    25% {
+      transform: scale(1.1) rotate(-7deg);
     }
-    40% {
-      transform: translateX(2.5px) scale(1.08) rotate(8deg);
+    50% {
+      transform: scale(1.1) rotate(7deg);
     }
-    60% {
-      transform: translateX(-1.5px) scale(1.03) rotate(-4deg);
-    }
-    80% {
-      transform: translateX(1.5px) scale(1.03) rotate(4deg);
-      box-shadow: 0 0 0 6px rgba(248, 113, 113, 0);
+    75% {
+      transform: scale(1.04) rotate(-3deg);
     }
   }
 
-  @media (prefers-reduced-motion: reduce) {
-    .sv-wrong-badge {
-      animation: none !important;
-    }
+  /* DETECTED NOISE 박스 및 리셋 로그 안의 취소선(line-through) 강제 제거 */
+  .sv-no-strike,
+  .sv-no-strike * {
+    text-decoration: none !important;
   }
 </style>
 
 <script>
 (function() {
-  function createWrongBadge(isHeader) {
-    const badge = document.createElement('span');
-    badge.className = 'sv-wrong-badge' + (isHeader ? ' sv-wrong-badge--header' : '');
-    badge.setAttribute('aria-label', '제거할 노이즈 표시');
-    badge.title = '제거할 노이즈';
-    badge.textContent = '❌';
-    return badge;
-  }
+  function cleanNoiseUI() {
+    // 1. 기존에 잘못 생성된 배지가 있다면 먼저 정리
+    document.querySelectorAll('.sv-wrong-badge').forEach((el) => el.remove());
 
-  function applyNoiseBadges() {
-    const nodes = document.querySelectorAll('h1, h2, h3, h4, h5, h6, p, span, div, strong, label');
-    nodes.forEach((el) => {
-      if (el.dataset.svBadgeApplied === 'true') return;
-      if (el.children.length > 2) return;
+    // 2. 화면의 모든 텍스트 노드/요소 검사
+    const allElements = document.querySelectorAll('div, span, p, h1, h2, h3, h4, strong, label, del, s');
 
-      const text = (el.textContent || '').trim();
-      if (!text || text.length > 60) return;
+    allElements.forEach((el) => {
+      // 취소선(line-through)이 걸린 모든 요소의 줄 긋기 제거
+      const computedDecor = getComputedStyle(el).textDecorationLine || '';
+      const inlineStyle = el.getAttribute('style') || '';
+      if (
+        el.tagName === 'DEL' ||
+        el.tagName === 'S' ||
+        computedDecor.includes('line-through') ||
+        inlineStyle.includes('line-through')
+      ) {
+        el.style.textDecoration = 'none';
+        el.classList.add('sv-no-strike');
+      }
 
-      const isDetectedNoiseHeader = /detected noise/i.test(text) || text.includes('제거된 추측');
-      const isRemoveNoiseHeader = text.includes('제거할 노이즈');
+      // 3. 'DETECTED NOISE (제거된 추측)' 헤더 처리 (딱 1개의 움직이는 ❌만 남기기)
+      if (el.children.length === 0) {
+        const rawText = (el.textContent || '').trim();
+        if (/DETECTED NOISE/i.test(rawText) && rawText.includes('제거된 추측')) {
+          const parent = el.parentElement;
+          // 앞쪽에 원래 붙어있던 정적 '✕' 기호 제거
+          el.textContent = rawText.replace(/^[✕✖✗❌]\s*/, '');
 
-      if (isDetectedNoiseHeader || isRemoveNoiseHeader) {
-        // 기존 정적 ❌ 문자가 중복으로 붙어있는 경우 중복 방지 처리만 하고 모션 배지 추가
-        el.appendChild(createWrongBadge(true));
-        el.dataset.svBadgeApplied = 'true';
+          if (parent) {
+            // 부모 영역 안의 기존 정적 '✕' 아이콘 요소 숨김
+            Array.from(parent.children).forEach((sibling) => {
+              if (sibling !== el && /^[✕✖✗❌]$/.test((sibling.textContent || '').trim())) {
+                sibling.style.display = 'none';
+              }
+            });
+
+            // 이미 깔끔한 배지가 붙어있지 않을 때만 제목 바로 뒤에 딱 1개 추가
+            if (!parent.querySelector('.sv-clean-wrong-badge')) {
+              const badge = document.createElement('span');
+              badge.className = 'sv-clean-wrong-badge';
+              badge.textContent = '❌';
+              el.insertAdjacentElement('afterend', badge);
+            }
+          }
+        }
       }
     });
   }
 
-  applyNoiseBadges();
+  cleanNoiseUI();
 
   const observer = new MutationObserver(() => {
-    applyNoiseBadges();
+    cleanNoiseUI();
   });
 
   observer.observe(document.body, {
     childList: true,
-    subtree: true
+    subtree: true,
+    attributes: true,
+    attributeFilter: ['style', 'class']
   });
 })();
 </script>
-<!-- ▲ 노이즈 제거 배지 모션 스크립트 끝 ▲ -->
+<!-- ▲ DETECTED NOISE 간결화 & 단일 ❌ 배지 모션 끝 ▲ -->
 </body>
   
 </html>
