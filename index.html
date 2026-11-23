@@ -93,7 +93,7 @@
     .log-top-row { display: flex; justify-content: space-between; align-items: center; }
     .log-date { font-size: 11px; color: var(--text-secondary); display: flex; align-items: center; gap: 6px; }
     .replay-pill { background: rgba(56, 189, 248, 0.14); color: var(--accent); font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 999px; }
-    .log-noise-strike { color: var(--text-secondary); text-decoration: line-through; font-size: 12px; }
+    .log-noise-strike, .log-noise-text { color: var(--text-primary); text-decoration: none; font-size: 13px; line-height: 1.45; word-break: keep-all; }
     .log-action-bold { color: var(--success); font-weight: 700; font-size: 14px; line-height: 1.45; word-break: keep-all; }
     .log-bottom-row { display: flex; justify-content: space-between; align-items: center; padding-top: 8px; border-top: 1px solid rgba(51, 65, 85, 0.5); }
     .win-toggle-btn { background: rgba(251, 191, 36, 0.12); border: 1px solid rgba(251, 191, 36, 0.4); color: var(--gold); font-size: 11px; font-weight: 700; padding: 5px 10px; border-radius: 999px; cursor: pointer; z-index: 2; }
@@ -914,7 +914,7 @@
             <span class="log-date">${log.date}${log.situation ? ` · <span style="color:var(--accent); font-weight:600;">${log.situation}</span>` : ""} <span class="replay-pill">▶ 전체화면 재생</span></span>
             <button class="del-log-btn" onclick="deleteLog(${log.id}, event)" title="삭제">삭제 ✕</button>
           </div>
-          <div class="log-noise-strike">${log.noise}</div>
+          <div class="log-noise-text">${log.noise}</div>
           <div class="log-action-bold">→ ${log.action}</div>
           <div class="log-bottom-row">
             <span style="font-size: 11px; color: var(--text-secondary);">${log.win ? '✨ 실제로 해낸 성공 기억' : '카드를 눌러 리셋 과정 다시 보기'}</span>
