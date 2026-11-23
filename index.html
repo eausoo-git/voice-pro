@@ -619,7 +619,10 @@
       if (btnEl) btnEl.classList.add('active');
       document.getElementById('panel-' + tabName).classList.add('active');
       if (tabName !== 'voice') stopMicMeter();
-      if (tabName === 'logs') renderLogs();
+      if (tabName === 'logs') {
+        renderLogs();
+        if (typeof syncBackupBar === 'function') syncBackupBar();
+      }
     }
 
     let breathRunning = false, countdownInterval = null;
@@ -823,6 +826,7 @@
       { tag: "#9. 완벽하게 말해야 한다는 강박", noise: "내 높은 목표와 이상에 걸맞게 처음부터 끝까지 빈틈없이 말해야만 한다.", alt1: "100점짜리 스피치를 기다리다 입을 닫는 것보다 70점짜리 실행이 압도적으로 낫다.", alt2: "실전 경험이 쌓여야 내가 원하는 이상적인 모습에 가까워질 수 있다.", alt3: "지금의 말하기는 최종 시험이 아니라 목표를 향해 가는 가벼운 연습이다.", action: "완성도 70%만 되어도 성공이라고 기준 낮추고 지금 바로 첫마디 내뱉기" },
       { tag: "#10. 먼저 말을 꺼내기 망설여질 때", noise: "지금 말을 걸면 방해가 되거나 어색해질 것 같아서 타이밍을 계속 놓친다.", alt1: "상대방은 내가 먼저 말을 걸어주면 오히려 고마워하거나 자연스럽게 받아들인다.", alt2: "거창한 인사말 대신 '잠시 여쭤볼 게 있는데요'라는 단순한 신호면 충분하다.", alt3: "망설이는 시간이 길어질수록 긴장도만 올라가므로 3초 안에 시작하는 게 편하다.", action: "생각 멈추고 속으로 '3, 2, 1' 센 뒤 가장 단순한 첫마디 바로 건네기" }
     ];
+    let currentSituationTag = "";
 
     function renderPresetChips() {
       const grid = document.getElementById('presetGrid'); grid.innerHTML = '';
@@ -834,6 +838,7 @@
     function applyPreset(idx, chipEl) {
       document.querySelectorAll('.preset-chip').forEach(c => c.classList.remove('selected')); chipEl.classList.add('selected');
       const d = anxietyPresets[idx];
+      currentSituationTag = d.tag;
       document.getElementById('noiseInput').value = d.noise; document.getElementById('alt1').value = d.alt1;
       document.getElementById('alt2').value = d.alt2; document.getElementById('alt3').value = d.alt3;
       document.getElementById('focusAction').value = d.action;
@@ -852,11 +857,15 @@
       document.getElementById('signalResultText').innerText = `"${actionVal}"`;
       document.getElementById('signalResultCard').style.display = 'block';
 
+      const selectedChip = document.querySelector('.preset-chip.selected');
+      const situationVal = currentSituationTag || (selectedChip ? selectedChip.innerText.trim() : '(직접 입력 상황)');
+
       const logs = JSON.parse(localStorage.getItem('stage_voice_logs') || '[]'), now = new Date();
       const dateStr = `${now.getMonth() + 1}/${now.getDate()} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
       logs.unshift({
         id: Date.now(),
         date: dateStr,
+        situation: situationVal,
         noise: noiseVal || "(직접 입력한 긴장 상황)",
         alt1: alt1Val || "상대는 내 말을 평가하는 것이 아니라 내용을 듣는 중이다.",
         alt2: alt2Val || "추측 대신 내가 통제할 수 있는 행동에만 집중하면 충분하다.",
@@ -870,7 +879,11 @@
     }
     function resetFormInputs() {
       document.querySelectorAll('.preset-chip').forEach(c => c.classList.remove('selected'));
-      ['noiseInput', 'alt1', 'alt2', 'alt3', 'focusAction'].forEach(id => document.getElementById(id).value = '');
+      currentSituationTag = '';
+      ['noiseInput', 'alt1', 'alt2', 'alt3', 'focusAction'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+      });
       document.getElementById('noiseBoxGroup').classList.remove('shredded');
       document.getElementById('signalResultCard').style.display = 'none';
     }
@@ -898,7 +911,7 @@
         item.onclick = () => openReplayModal(log.id);
         item.innerHTML = `
           <div class="log-top-row">
-            <span class="log-date">${log.date} <span class="replay-pill">▶ 전체화면 재생</span></span>
+            <span class="log-date">${log.date}${log.situation ? ` · <span style="color:var(--accent); font-weight:600;">${log.situation}</span>` : ""} <span class="replay-pill">▶ 전체화면 재생</span></span>
             <button class="del-log-btn" onclick="deleteLog(${log.id}, event)" title="삭제">삭제 ✕</button>
           </div>
           <div class="log-noise-strike">${log.noise}</div>
@@ -912,6 +925,7 @@
         `;
         listEl.appendChild(item);
       });
+      if (typeof syncBackupBar === "function") syncBackupBar();
     }
     function deleteLog(id, e) {
       if (e) e.stopPropagation();
@@ -938,7 +952,7 @@
       if (!target) return;
 
       activeReplayId = id;
-      document.getElementById('replayDateBadge').innerText = `SIGNAL REPLAY · ${target.date}`;
+      document.getElementById('replayDateBadge').innerText = target.situation ? `${target.situation} · ${target.date}` : `SIGNAL REPLAY · ${target.date}`;
       document.getElementById('replayNoiseText').innerText = `"${target.noise}"`;
       document.getElementById('replayAlt1').innerText = `• ${target.alt1 || "상대는 내 말을 평가하는 게 아니라 내용을 들으려는 중이다."}`;
       document.getElementById('replayAlt2').innerText = `• ${target.alt2 || "추측을 멈추고 내가 통제할 수 있는 행동만 하면 충분하다."}`;
@@ -1150,7 +1164,11 @@
 
       const ta = document.createElement('textarea');
       ta.className = (input.className ? input.className + ' ' : '') + 'sv-multiline-box';
-      if (input.id) ta.id = input.id;
+      const originalId = input.id;
+      if (originalId) {
+        input.id = originalId + '_hidden';
+        ta.id = originalId;
+      }
       if (input.name) ta.name = input.name;
       if (input.placeholder) ta.placeholder = input.placeholder;
       ta.rows = 2;
@@ -1372,38 +1390,20 @@
     }
   });
 
-  function isVisible(el) {
-    if (!el) return false;
-    const rect = el.getBoundingClientRect();
-    const cs = window.getComputedStyle(el);
-    return rect.width > 20 && rect.height > 20 && cs.display !== 'none' && cs.visibility !== 'hidden';
-  }
-
-  function findVisibleLogBox() {
-    const allEls = Array.from(document.querySelectorAll('div, section, article, main'));
-    return allEls.find((el) => {
-      if (el.id === 'svJsonBackupBar' || el.closest('#svJsonBackupBar')) return false;
-      if (!isVisible(el)) return false;
-      const txt = el.innerText || '';
-      const hasTitle = /나의 멘탈 리셋 & 성공 로그/.test(txt);
-      const hasStats = /누적 노이즈 리셋|실천 성공 체크/.test(txt);
-      const childCount = el.querySelectorAll('div').length;
-      return hasTitle && hasStats && childCount >= 3 && childCount <= 60;
-    }) || null;
-  }
+  
 
   function collectCreatedCards() {
     const created = [];
     const seenKeys = new Set();
 
     function pushItem(item) {
-      const situation = String(item.situation || '').trim();
+      const situation = String(item.situation || item.situationLabel || '').trim();
       const noise = String(item.noise || '').trim();
-      const signal = String(item.signal || '').trim();
+      const signal = String(item.signal || item.action || item.coreSignal || '').trim();
       const ev1 = String(item.evidence1 ?? item.alt1 ?? '').trim();
       const ev2 = String(item.evidence2 ?? item.alt2 ?? '').trim();
       const ev3 = String(item.evidence3 ?? item.alt3 ?? '').trim();
-      const completed = Boolean(item.completed);
+      const completed = Boolean(item.completed || item.win);
       const createdAt = String(item.createdAt || '').trim();
 
       if (!noise && !signal && !ev1 && !ev2 && !ev3) return;
@@ -1441,7 +1441,7 @@
                 evidence1: entry.alt1 ?? entry.evidence1 ?? '',
                 evidence2: entry.alt2 ?? entry.evidence2 ?? '',
                 evidence3: entry.alt3 ?? entry.evidence3 ?? '',
-                signal: entry.signal || entry.coreSignal || '',
+                signal: entry.signal || entry.action || entry.coreSignal || '',
                 completed: Boolean(entry.win ?? entry.completed ?? entry.isSuccess ?? entry.successChecked ?? entry.done)
               });
             }
@@ -1522,15 +1522,10 @@
   }
 
   function syncBackupBar() {
-    const existingBar = document.getElementById('svJsonBackupBar');
-    const logBox = findVisibleLogBox();
+    const logCard = document.querySelector('#panel-logs .card');
+    if (!logCard) return;
 
-    if (!logBox) {
-      if (existingBar) existingBar.style.display = 'none';
-      return;
-    }
-
-    let bar = existingBar;
+    let bar = document.getElementById('svJsonBackupBar');
     if (!bar) {
       bar = document.createElement('div');
       bar.id = 'svJsonBackupBar';
@@ -1541,15 +1536,15 @@
       bar.querySelector('#svBtnOnlyJsonBackup').onclick = handleJsonBackup;
     }
 
-    bar.style.display = 'flex';
-    if (logBox.parentElement && bar.parentElement !== logBox.parentElement) {
-      logBox.insertAdjacentElement('afterend', bar);
+    if (bar.parentElement !== logCard) {
+      logCard.appendChild(bar);
     }
+    bar.style.display = 'flex';
   }
+  window.syncBackupBar = syncBackupBar;
 
-  setInterval(syncBackupBar, 500);
-  document.addEventListener('click', () => setTimeout(syncBackupBar, 60));
   window.addEventListener('DOMContentLoaded', syncBackupBar);
+  syncBackupBar();
 })();
 </script>
 <!-- ▲ 노이즈 리셋 JSON 백업 (alt1~3 매핑 · situation 포함 · 기본 10가지 + 생성 카드 통합 · 안드로이드/아이폰 호환) 끝 ▲ -->
