@@ -1200,7 +1200,7 @@
 })();
 </script>
 <!-- ▲ 객관적 데이터 & 남길 시그널 여러 줄 자동확장(Textarea) 변환 끝 ▲ -->
-<!-- ▼ 노이즈 리셋 JSON 백업 (situation 포함 · 기본 10가지 + 생성 카드 통합 · 안드로이드/아이폰 호환) 시작 ▼ -->
+<!-- ▼ 노이즈 리셋 JSON 백업 (alt1~3 매핑 · situation 포함 · 기본 10가지 + 생성 카드 통합 · 안드로이드/아이폰 호환) 시작 ▼ -->
 <style>
   #svJsonBackupBar {
     margin-top: 14px;
@@ -1400,19 +1400,19 @@
       const situation = String(item.situation || '').trim();
       const noise = String(item.noise || '').trim();
       const signal = String(item.signal || '').trim();
-      const ev1 = String(item.evidence1 || '').trim();
-      const ev2 = String(item.evidence2 || '').trim();
-      const ev3 = String(item.evidence3 || '').trim();
+      const ev1 = String(item.evidence1 ?? item.alt1 ?? '').trim();
+      const ev2 = String(item.evidence2 ?? item.alt2 ?? '').trim();
+      const ev3 = String(item.evidence3 ?? item.alt3 ?? '').trim();
       const completed = Boolean(item.completed);
-      const createdAt = String(item.createdAt || '');
+      const createdAt = String(item.createdAt || '').trim();
 
       if (!noise && !signal && !ev1 && !ev2 && !ev3) return;
-      const dedupKey = `${createdAt}|${situation}|${noise}|${signal}|${completed}`;
+      const dedupKey = `${createdAt}|${noise}|${signal}`;
       if (seenKeys.has(dedupKey)) return;
       seenKeys.add(dedupKey);
 
       created.push({
-        id: item.id || ('created_' + (created.length + 1)),
+        id: item.id ?? ('created_' + (created.length + 1)),
         source: 'custom_card',
         createdAt,
         situation,
@@ -1425,87 +1425,30 @@
       });
     }
 
+    // 1) 앱 원본 저장소(stage_voice_logs)에서 alt1, alt2, alt3 포함 전체 필드 추출
     try {
-      for (let i = 0; i < localStorage.length; i++) {
-        const k = localStorage.key(i);
-        if (!k || /stage_voice_builtin_seeded|stage_voice_reset_records_v1/.test(k)) continue;
-        const raw = localStorage.getItem(k);
-        if (!raw || (!raw.startsWith('[') && !raw.startsWith('{'))) continue;
-        const parsed = JSON.parse(raw);
-        const arr = Array.isArray(parsed) ? parsed : (parsed && Array.isArray(parsed.logs) ? parsed.logs : []);
-        for (const entry of arr) {
-          if (entry && typeof entry === 'object' && (entry.noise || entry.signal || entry.coreSignal)) {
-            const evs = Array.isArray(entry.evidences) ? entry.evidences : (Array.isArray(entry.evidence) ? entry.evidence : []);
-            pushItem({
-              id: entry.id,
-              createdAt: entry.createdAt || entry.date || entry.time || '',
-              situation: entry.situation || entry.situationLabel || lastSelectedSituation || '',
-              noise: entry.noise || '',
-              evidence1: entry.evidence1 || evs[0] || '',
-              evidence2: entry.evidence2 || evs[1] || '',
-              evidence3: entry.evidence3 || evs[2] || '',
-              signal: entry.signal || entry.coreSignal || '',
-              completed: Boolean(entry.completed ?? entry.isSuccess ?? entry.successChecked ?? entry.done)
-            });
-          }
+      const rawLogs = localStorage.getItem('stage_voice_logs');
+      if (rawLogs) {
+        const parsedLogs = JSON.parse(rawLogs);
+        if (Array.isArray(parsedLogs)) {
+          parsedLogs.forEach((entry, idx) => {
+            if (entry && typeof entry === 'object') {
+              pushItem({
+                id: entry.id ?? ('log_' + (idx + 1)),
+                createdAt: entry.date || entry.createdAt || '',
+                situation: entry.situation || entry.situationLabel || lastSelectedSituation || '',
+                noise: entry.noise || '',
+                evidence1: entry.alt1 ?? entry.evidence1 ?? '',
+                evidence2: entry.alt2 ?? entry.evidence2 ?? '',
+                evidence3: entry.alt3 ?? entry.evidence3 ?? '',
+                signal: entry.signal || entry.coreSignal || '',
+                completed: Boolean(entry.win ?? entry.completed ?? entry.isSuccess ?? entry.successChecked ?? entry.done)
+              });
+            }
+          });
         }
       }
     } catch (_) {}
-
-    const logBox = findVisibleLogBox();
-    if (logBox) {
-      const cardCandidates = Array.from(logBox.querySelectorAll('div')).filter((el) => {
-        if (el.id === 'svJsonBackupBar' || el.closest('#svJsonBackupBar')) return false;
-        const txt = (el.innerText || '').trim();
-        const hasArrowOrSignal = txt.includes('→') || /실천\s*성공|해냈어요|전체화면\s*재생/.test(txt);
-        const isNotWholeBox = !/나의 멘탈 리셋 & 성공 로그/.test(txt);
-        return hasArrowOrSignal && isNotWholeBox && txt.length > 15 && txt.length < 600;
-      });
-
-      cardCandidates.forEach((cardEl, idx) => {
-        const lines = (cardEl.innerText || '')
-          .split('\n')
-          .map((s) => s.trim())
-          .filter((s) => s && !/전체화면\s*재생|삭제|×|카드를\s*눌러|리셋\s*과정\s*다시\s*보기|실제로\s*해낸\s*성공\s*기억/.test(s));
-
-        let createdAt = '';
-        let situation = '';
-        let noise = '';
-        let signal = '';
-        const completed = /실천\s*성공\s*완료|해냈어요\s*체크/.test(cardEl.innerText || '');
-
-        for (const line of lines) {
-          if (!createdAt && /\d{1,2}\/\d{1,2}\s*\d{1,2}:\d{2}|\d{4}-\d{2}-\d{2}/.test(line)) {
-            const m = line.match(/(\d{4}-\d{2}-\d{2}\s*\d{1,2}:\d{2}|\d{1,2}\/\d{1,2}\s*\d{1,2}:\d{2})/);
-            if (m) createdAt = m[1];
-          }
-          if (!situation && /^#\d{1,2}\./.test(line)) {
-            situation = line;
-          } else if (line.startsWith('→')) {
-            signal = line.replace(/^→\s*/, '').trim();
-          } else if (
-            !/^\d{1,2}\/\d{1,2}/.test(line) &&
-            !/^\d{4}-\d{2}-\d{2}/.test(line) &&
-            !/실천\s*성공|해냈어요/.test(line) &&
-            !noise
-          ) {
-            noise = line;
-          }
-        }
-
-        pushItem({
-          id: 'log_card_' + (idx + 1),
-          createdAt,
-          situation: situation || lastSelectedSituation || '직접 입력',
-          noise,
-          evidence1: '',
-          evidence2: '',
-          evidence3: '',
-          signal,
-          completed
-        });
-      });
-    }
 
     return created;
   }
@@ -1609,7 +1552,7 @@
   window.addEventListener('DOMContentLoaded', syncBackupBar);
 })();
 </script>
-<!-- ▲ 노이즈 리셋 JSON 백업 (situation 포함 · 기본 10가지 + 생성 카드 통합 · 안드로이드/아이폰 호환) 끝 ▲ -->
+<!-- ▲ 노이즈 리셋 JSON 백업 (alt1~3 매핑 · situation 포함 · 기본 10가지 + 생성 카드 통합 · 안드로이드/아이폰 호환) 끝 ▲ -->
 
 </body>
   
