@@ -72,6 +72,9 @@
     .form-group label { font-size: 12px; font-weight: 700; color: var(--text-secondary); }
     .form-group.noise-box label { color: var(--danger); }
     .form-group.signal-box label { color: var(--success); }
+    .form-clear-btn { background: rgba(30, 41, 59, 0.7); border: 1px solid var(--border); color: var(--text-secondary); font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 6px; cursor: pointer; transition: all 0.15s ease; white-space: nowrap; }
+    .form-clear-btn:hover { border-color: var(--accent); color: var(--text-primary); background: rgba(56, 189, 248, 0.12); }
+    .form-clear-btn:active { transform: scale(0.97); }
     textarea, input[type="text"] { width: 100%; background: var(--bg-input); border: 1px solid var(--border); border-radius: 10px; padding: 11px 12px; color: var(--text-primary); font-size: 16px; font-family: inherit; resize: none; }
     textarea:focus, input[type="text"]:focus { outline: none; border-color: var(--accent); }
     .signal-result-card { display: none; background: linear-gradient(145deg, rgba(52, 211, 153, 0.14), rgba(15, 23, 42, 0.95)); border: 1px solid var(--success); border-radius: 14px; padding: 18px; margin-top: 14px; text-align: center; animation: fadeIn 0.3s ease; }
@@ -492,7 +495,10 @@
         <div id="presetGrid" class="preset-grid"></div>
 
         <div id="noiseBoxGroup" class="form-group noise-box">
-          <label>❌ 제거할 노이즈 (머릿속 부정적 추측)</label>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
+            <label style="margin: 0;">❌ 제거할 노이즈 (머릿속 부정적 추측)</label>
+            <button type="button" class="form-clear-btn" onclick="resetFormInputs()">입력칸 비우기 ↻</button>
+          </div>
           <textarea id="noiseInput" rows="2" placeholder="위 상황 버튼을 누르거나 직접 입력하세요."></textarea>
         </div>
         <div class="form-group">
@@ -506,7 +512,6 @@
           <input type="text" id="focusAction" placeholder="지금 실행할 행동 한 문장" />
         </div>
         <button class="primary-btn" style="background: var(--success);" onclick="executeNoiseReset()">노이즈 지우고 핵심 액션 확정하기</button>
-        <button class="secondary-btn" onclick="resetFormInputs()">입력칸 비우기</button>
 
         <div id="signalResultCard" class="signal-result-card">
           <div class="signal-result-tag">✓ NOISE CLEARED · 현재 집중할 시그널</div>
@@ -883,6 +888,9 @@
       ['noiseInput', 'alt1', 'alt2', 'alt3', 'focusAction'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.value = '';
+      });
+      document.querySelectorAll('.sv-multiline-box').forEach(ta => {
+        ta.style.height = '52px';
       });
       document.getElementById('noiseBoxGroup').classList.remove('shredded');
       document.getElementById('signalResultCard').style.display = 'none';
