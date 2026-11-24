@@ -21,7 +21,7 @@
     header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
     .brand h1 { font-size: 22px; font-weight: 700; letter-spacing: 0.5px; }
     .brand span { font-size: 14.5px; color: var(--accent); font-weight: 500; }
-    .privacy-badge { font-size: 13px; color: var(--text-secondary); background: var(--bg-card); padding: 5px 12px; border-radius: 999px; border: 1px solid var(--border); }
+    .privacy-badge { font-size: 12.5px; color: var(--text-secondary); background: var(--bg-card); height: 28px; padding: 0 11px; border-radius: 999px; border: 1px solid var(--border); display: inline-flex; align-items: center; justify-content: center; box-sizing: border-box; line-height: 1; white-space: nowrap; }
     .tabs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; background: var(--bg-card); padding: 5px; border-radius: 12px; border: 1px solid var(--border); }
     .tab-btn { background: transparent; border: none; color: var(--text-secondary); font-size: 13.5px; font-weight: 700; padding: 11px 2px; letter-spacing: -0.3px; border-radius: 8px; cursor: pointer; transition: all 0.2s ease; white-space: nowrap; }
     .tab-btn.active { background: var(--accent); color: #0f172a; }
@@ -33,7 +33,7 @@
     .card-desc { font-size: 15px; color: var(--text-secondary); margin-bottom: 18px; line-height: 1.6; word-break: keep-all; }
     .breath-stage { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px 0; }
     .breath-circle { width: 180px; height: 180px; border-radius: 50%; background: radial-gradient(circle, var(--accent-glow) 0%, rgba(15, 23, 42, 0.8) 75%); border: 2px solid var(--accent); display: flex; flex-direction: column; align-items: center; justify-content: center; transition: transform 1s ease-in-out; box-shadow: 0 0 24px var(--accent-glow); }
-    .breath-phase { font-size: 18px; font-weight: 700; text-align: center; }
+    .breath-phase { font-size: 17px; font-weight: 700; text-align: center; word-break: keep-all; padding: 0 12px; line-height: 1.45; }
     .breath-timer { font-size: 34px; font-weight: 800; color: var(--accent); margin-top: 4px; }
     .cycle-info { margin-top: 18px; font-size: 14.5px; line-height: 1.5; color: var(--text-secondary); text-align: center; }
     .primary-btn { width: 100%; padding: 16px 14px; border-radius: 12px; border: none; background: var(--accent); color: #0f172a; font-size: 17px; font-weight: 700; cursor: pointer; transition: opacity 0.2s; }
@@ -423,6 +423,88 @@
       border-color: rgba(148, 163, 184, 0.3);
       background: rgba(15, 23, 42, 0.65);
     }
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+    .brand h1 {
+      font-size: 21px;
+      font-weight: 800;
+      letter-spacing: 0.3px;
+      line-height: 1.1;
+      margin: 0;
+    }
+    .quick-breath-btn {
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.14), rgba(52, 211, 153, 0.16));
+      border: 1px solid rgba(56, 189, 248, 0.45);
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 700;
+      height: 28px;
+      padding: 0 11px;
+      border-radius: 999px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      transition: all 0.25s ease;
+      white-space: nowrap;
+      box-sizing: border-box;
+      line-height: 1;
+      vertical-align: middle;
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.12);
+    }
+    .quick-breath-btn:hover {
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.25), rgba(52, 211, 153, 0.3));
+      border-color: var(--accent);
+      transform: translateY(-1px);
+    }
+    .quick-breath-btn.running {
+      background: linear-gradient(135deg, rgba(248, 113, 113, 0.18), rgba(239, 68, 68, 0.28));
+      border-color: rgba(248, 113, 113, 0.85);
+      color: #fecaca;
+      box-shadow: 0 0 14px rgba(248, 113, 113, 0.35);
+    }
+    .quick-breath-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+      width: 14px;
+      height: 14px;
+      flex-shrink: 0;
+    }
+    .quick-breath-label {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+      font-size: 12px;
+      letter-spacing: -0.2px;
+    }
+    .heart-breathe-svg {
+      width: 13px;
+      height: 13px;
+      fill: #38bdf8;
+      display: block;
+      transform-origin: center center;
+      transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1), fill 0.3s ease;
+      filter: drop-shadow(0 0 3px rgba(56, 189, 248, 0.6));
+    }
+    .quick-breath-btn:not(.running) .heart-breathe-svg {
+      animation: heartResting 3.0s infinite ease-in-out;
+    }
+    @keyframes heartResting {
+      0%, 100% { transform: scale(0.92); opacity: 0.85; }
+      50% { transform: scale(1.12); opacity: 1; }
+    }
+    .quick-breath-btn.running .heart-breathe-svg {
+      fill: #f87171;
+      filter: drop-shadow(0 0 5px rgba(248, 113, 113, 0.85));
+    }
   </style>
 </head>
 <body>
@@ -432,7 +514,13 @@
         <h1>STAGE VOICE PRO</h1>
         <span>Speech & Focus Conditioning</span>
       </div>
-      <div class="privacy-badge">🔒 기기 내 로컬 전용</div>
+      <div class="header-actions">
+        <button type="button" id="quickInfiniteBreathBtn" class="quick-breath-btn" onclick="toggleQuickInfiniteBreath()" title="내가 멈출 때까지 끊김 없이 이어지는 연속 호흡 루프">
+          <span class="quick-breath-icon"><svg class="heart-breathe-svg" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></span>
+          <span class="quick-breath-label">호흡 루프</span>
+        </button>
+        <div class="privacy-badge">🔒 기기 내 로컬 전용</div>
+      </div>
     </header>
 
     <nav class="tabs">
@@ -1020,31 +1108,92 @@
       }
     }
 
-    let breathRunning = false, countdownInterval = null;
+    let breathRunning = false, countdownInterval = null, isInfiniteBreathMode = false;
     const circle = document.getElementById('breathCircle'), phaseText = document.getElementById('breathPhase'), timerText = document.getElementById('breathTimer'), startBtn = document.getElementById('breathStartBtn');
 
-    function toggleBreath() { breathRunning ? stopBreath() : startBreath(); }
+    function updateQuickBreathBtnUI() {
+      const btn = document.getElementById('quickInfiniteBreathBtn');
+      if (!btn) return;
+      const label = btn.querySelector('.quick-breath-label');
+      const heartSvg = btn.querySelector('.heart-breathe-svg');
+      if (breathRunning) {
+        btn.classList.add('running');
+        if (label) label.innerText = '멈추기';
+      } else {
+        btn.classList.remove('running');
+        if (label) label.innerText = '호흡 루프';
+        if (heartSvg) {
+          heartSvg.style.transition = 'transform 0.5s ease';
+          heartSvg.style.transform = 'scale(1)';
+        }
+      }
+    }
+
+    function toggleQuickInfiniteBreath() {
+      if (breathRunning) {
+        stopBreath();
+      } else {
+        switchTab('breath', document.getElementById('tab-breath'));
+        startBreath(true);
+      }
+    }
+
+    function toggleBreath() {
+      breathRunning ? stopBreath() : startBreath(false);
+    }
+
     function stopBreath() {
       stopAllBreathingAudio();
-      breathRunning = false; clearInterval(countdownInterval);
-      circle.style.transform = 'scale(1)'; phaseText.innerText = '준비'; timerText.innerText = '3세트';
-      startBtn.innerText = '호흡 루틴 시작 (약 35초)'; startBtn.style.background = 'var(--accent)';
+      breathRunning = false;
+      isInfiniteBreathMode = false;
+      clearInterval(countdownInterval);
+      circle.style.transform = 'scale(1)';
+      phaseText.innerText = '준비';
+      timerText.innerText = '3세트';
+      startBtn.innerText = '호흡 루틴 시작 (약 35초)';
+      startBtn.style.background = 'var(--accent)';
+      updateQuickBreathBtnUI();
     }
+
     function runCountdown(seconds, label, scaleVal, nextCallback) {
       if (!breathRunning) return;
-      phaseText.innerText = label; circle.style.transform = `scale(${scaleVal})`;
-      let remaining = seconds; timerText.innerText = remaining.toFixed(1) + 's';
+      phaseText.innerText = label;
+      circle.style.transform = `scale(${scaleVal})`;
+
+      // 호흡 루프 하트 아이콘 숨쉬기 동기화
+      const heartSvg = document.querySelector('#quickInfiniteBreathBtn .heart-breathe-svg');
+      if (heartSvg && breathRunning) {
+        heartSvg.style.transition = `transform ${seconds}s cubic-bezier(0.25, 1, 0.5, 1)`;
+        const heartScale = (scaleVal > 1.25) ? 1.48 : (scaleVal > 1.0 ? 1.30 : 0.88);
+        heartSvg.style.transform = `scale(${heartScale})`;
+      }
+
+      let remaining = seconds;
+      timerText.innerText = remaining.toFixed(1) + 's';
       clearInterval(countdownInterval);
       countdownInterval = setInterval(() => {
         remaining -= 0.1;
-        if (remaining <= 0) { clearInterval(countdownInterval); timerText.innerText = '0.0s'; if (breathRunning && nextCallback) nextCallback(); }
-        else { timerText.innerText = remaining.toFixed(1) + 's'; }
+        if (remaining <= 0) {
+          clearInterval(countdownInterval);
+          timerText.innerText = '0.0s';
+          if (breathRunning && nextCallback) nextCallback();
+        } else {
+          timerText.innerText = remaining.toFixed(1) + 's';
+        }
       }, 100);
     }
-    function startBreath() {
+
+    function startBreath(isInfinite = false) {
       getAudioContext();
-      breathRunning = true; startBtn.innerText = '중지하기'; startBtn.style.background = 'var(--danger)';
-      let currentCycle = 1, totalCycles = 3;
+      breathRunning = true;
+      isInfiniteBreathMode = isInfinite;
+      startBtn.innerText = isInfinite ? '루프 중지하기' : '중지하기';
+      startBtn.style.background = 'var(--danger)';
+      updateQuickBreathBtnUI();
+
+      let currentCycle = 1;
+      const totalCycles = isInfinite ? Infinity : 3;
+
       function runCycle() {
         if (!breathRunning) return;
         if (currentCycle > totalCycles) {
@@ -1054,12 +1203,17 @@
           playGentleChime(659.25, 1.5, 0.08); // E5 완료 벨
           return;
         }
+
+        const cycleLabel = isInfinite ? `${currentCycle}회 ` : `[${currentCycle}/3] `;
         playBreathInhale(4.0);
-        runCountdown(4.0, `[${currentCycle}/3] 코로 들이마시기`, 1.22, () => {
+        runCountdown(4.0, `${cycleLabel}코로 들이마시기`, 1.22, () => {
           playBreathExtraInhale(1.5);
-          runCountdown(1.5, `[${currentCycle}/3] 한 번 더 짧게 흡입`, 1.35, () => {
+          runCountdown(1.5, `${cycleLabel}한 번 더 짧게 흡입`, 1.35, () => {
             playBreathExhale(6.0);
-            runCountdown(6.0, `[${currentCycle}/3] 입으로 길게 내쉬기`, 0.92, () => { currentCycle++; runCycle(); });
+            runCountdown(6.0, `${cycleLabel}입으로 길게 내쉬기`, 0.92, () => {
+              currentCycle++;
+              runCycle();
+            });
           });
         });
       }
