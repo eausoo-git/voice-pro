@@ -399,6 +399,30 @@
       background: linear-gradient(90deg, var(--gold), #f59e0b);
       color: #1f1300;
     }
+    .sound-toggle-btn {
+      background: rgba(30, 41, 59, 0.85);
+      border: 1px solid var(--border);
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 700;
+      padding: 5px 12px;
+      border-radius: 999px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+    .sound-toggle-btn:hover {
+      background: rgba(56, 189, 248, 0.15);
+      border-color: var(--accent);
+    }
+    .sound-toggle-btn.muted {
+      color: var(--text-secondary);
+      border-color: rgba(148, 163, 184, 0.3);
+      background: rgba(15, 23, 42, 0.65);
+    }
   </style>
 </head>
 <body>
@@ -421,7 +445,12 @@
     <!-- 탭 1: 호흡 밸런스 -->
     <section id="panel-breath" class="panel active">
       <div class="card">
-        <div class="card-title">횡격막 & 신경계 리셋 호흡</div>
+        <div class="card-title">
+          <span>횡격막 & 신경계 리셋 호흡</span>
+          <button type="button" id="soundToggleBtn1" class="sound-toggle-btn" onclick="toggleSoundMaster()" title="숨소리 음향 켜기/끄기">
+            <span class="sound-icon">🔊</span> <span class="sound-label">숨소리 켬</span>
+          </button>
+        </div>
         <div class="card-desc">말하기 전 목이 잠기거나 텐션이 올라갈 때 3세트만 실행해 발성 호흡을 안정시킵니다.</div>
         <div class="breath-stage">
           <div id="breathCircle" class="breath-circle">
@@ -437,7 +466,15 @@
     <!-- 탭 2: 보이스 튜닝 -->
     <section id="panel-voice" class="panel">
       <div class="card">
-        <div class="card-title"><span>인터랙티브 보이스 튜닝</span><span style="font-size: 14px; color: var(--purple);">3-Step Studio</span></div>
+        <div class="card-title">
+          <span>인터랙티브 보이스 튜닝</span>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <button type="button" id="soundToggleBtn2" class="sound-toggle-btn" onclick="toggleSoundMaster()" title="가이드음 켜기/끄기">
+              <span class="sound-icon">🔊</span> <span class="sound-label">가이드음 켬</span>
+            </button>
+            <span style="font-size: 14px; color: var(--purple);">3-Step Studio</span>
+          </div>
+        </div>
         <div class="card-desc">단계별 비주얼 가이드와 실시간 성량 미터로 본래 목소리 톤을 끌어올립니다.</div>
         <div class="step-pills">
           <div id="pill-1" class="step-pill active" onclick="selectTuningStep(1)">STEP 1. 공명</div>
@@ -618,12 +655,365 @@
   </div>
 
   <script>
+    /* ==========================================================================
+       Web Audio API 기반 실시간 호흡음 & 보이스 튜닝 오디오 신디사이저 엔진
+       ========================================================================== */
+    let synthAudioCtx = null;
+    let isAudioEnabled = localStorage.getItem('stage_voice_audio_enabled') !== 'false';
+
+    function getAudioContext() {
+      if (!synthAudioCtx) {
+        const AudioCtxClass = window.AudioContext || window.webkitAudioContext;
+        if (AudioCtxClass) {
+          synthAudioCtx = new AudioCtxClass();
+        }
+      }
+      if (synthAudioCtx && synthAudioCtx.state === 'suspended') {
+        synthAudioCtx.resume();
+      }
+      return synthAudioCtx;
+    }
+
+    function updateSoundToggleUI() {
+      const btn1 = document.getElementById('soundToggleBtn1');
+      const btn2 = document.getElementById('soundToggleBtn2');
+      [btn1, btn2].forEach(btn => {
+        if (!btn) return;
+        const icon = btn.querySelector('.sound-icon');
+        const label = btn.querySelector('.sound-label');
+        if (isAudioEnabled) {
+          btn.classList.remove('muted');
+          if (icon) icon.innerText = '🔊';
+          if (label) label.innerText = (btn.id === 'soundToggleBtn1') ? '숨소리 켬' : '가이드음 켬';
+        } else {
+          btn.classList.add('muted');
+          if (icon) icon.innerText = '🔇';
+          if (label) label.innerText = '소리 끔';
+        }
+      });
+    }
+
+    function toggleSoundMaster() {
+      isAudioEnabled = !isAudioEnabled;
+      localStorage.setItem('stage_voice_audio_enabled', isAudioEnabled ? 'true' : 'false');
+      updateSoundToggleUI();
+      if (!isAudioEnabled) {
+        stopAllBreathingAudio();
+        stopAllVoiceTuningAudio();
+      } else {
+        getAudioContext();
+      }
+    }
+
+    // 핑크 노이즈 버퍼 (생체 호흡의 공기 마찰음에 최적화)
+    let sharedPinkNoiseBuffer = null;
+    function getSharedPinkNoiseBuffer(ctx) {
+      if (sharedPinkNoiseBuffer) return sharedPinkNoiseBuffer;
+      const sampleRate = ctx.sampleRate || 44100;
+      const bufferSize = sampleRate * 7;
+      const buffer = ctx.createBuffer(1, bufferSize, sampleRate);
+      const data = buffer.getChannelData(0);
+      let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+      for (let i = 0; i < bufferSize; i++) {
+        const white = Math.random() * 2 - 1;
+        b0 = 0.99886 * b0 + white * 0.0555179;
+        b1 = 0.99332 * b1 + white * 0.0750759;
+        b2 = 0.96900 * b2 + white * 0.1538520;
+        b3 = 0.86650 * b3 + white * 0.3104856;
+        b4 = 0.55000 * b4 + white * 0.5329522;
+        b5 = -0.7616 * b5 - white * 0.0168980;
+        data[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362) * 0.11;
+        b6 = white * 0.115926;
+      }
+      sharedPinkNoiseBuffer = buffer;
+      return sharedPinkNoiseBuffer;
+    }
+
+    let activeBreathNodes = [];
+    let activeVoiceNodes = [];
+
+    function safeFadeAndStop(nodeList) {
+      const ctx = synthAudioCtx;
+      nodeList.forEach(item => {
+        try {
+          if (item.gain && ctx) {
+            item.gain.gain.cancelScheduledValues(ctx.currentTime);
+            item.gain.gain.setValueAtTime(item.gain.gain.value, ctx.currentTime);
+            item.gain.gain.linearRampToValueAtTime(0.0001, ctx.currentTime + 0.12);
+          }
+          if (item.source) {
+            setTimeout(() => {
+              try { item.source.stop(); } catch(_) {}
+            }, 150);
+          }
+        } catch(_) {}
+      });
+      nodeList.length = 0;
+    }
+
+    function stopAllBreathingAudio() {
+      safeFadeAndStop(activeBreathNodes);
+    }
+
+    function stopAllVoiceTuningAudio() {
+      safeFadeAndStop(activeVoiceNodes);
+    }
+
+    function playGentleChime(freq = 528, duration = 1.0, peakGain = 0.05) {
+      if (!isAudioEnabled) return;
+      const ctx = getAudioContext();
+      if (!ctx) return;
+      try {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, ctx.currentTime);
+        gain.gain.setValueAtTime(0.0001, ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(peakGain, ctx.currentTime + 0.04);
+        gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(ctx.currentTime);
+        osc.stop(ctx.currentTime + duration + 0.1);
+      } catch(_) {}
+    }
+
+    // 1) 코로 들이마시기 (4초 들숨)
+    function playBreathInhale(duration = 4.0) {
+      if (!isAudioEnabled) return;
+      const ctx = getAudioContext();
+      if (!ctx) return;
+      stopAllBreathingAudio();
+      playGentleChime(528, 1.2, 0.045);
+
+      try {
+        const pBuffer = getSharedPinkNoiseBuffer(ctx);
+        const source = ctx.createBufferSource();
+        source.buffer = pBuffer;
+        source.loop = true;
+
+        const filter = ctx.createBiquadFilter();
+        filter.type = 'bandpass';
+        filter.Q.setValueAtTime(1.5, ctx.currentTime);
+        filter.frequency.setValueAtTime(450, ctx.currentTime);
+        filter.frequency.exponentialRampToValueAtTime(1050, ctx.currentTime + duration * 0.9);
+
+        const gain = ctx.createGain();
+        const now = ctx.currentTime;
+        gain.gain.setValueAtTime(0.0001, now);
+        gain.gain.linearRampToValueAtTime(0.08, now + 0.8);
+        gain.gain.linearRampToValueAtTime(0.22, now + duration * 0.8);
+        gain.gain.linearRampToValueAtTime(0.0001, now + duration);
+
+        source.connect(filter);
+        filter.connect(gain);
+        gain.connect(ctx.destination);
+
+        source.start(now);
+        source.stop(now + duration + 0.1);
+        activeBreathNodes.push({ source, gain });
+      } catch(_) {}
+    }
+
+    // 2) 한 번 더 짧게 흡입 (1.5초 추가 흡입)
+    function playBreathExtraInhale(duration = 1.5) {
+      if (!isAudioEnabled) return;
+      const ctx = getAudioContext();
+      if (!ctx) return;
+      stopAllBreathingAudio();
+
+      try {
+        const pBuffer = getSharedPinkNoiseBuffer(ctx);
+        const source = ctx.createBufferSource();
+        source.buffer = pBuffer;
+        source.loop = true;
+
+        const filter = ctx.createBiquadFilter();
+        filter.type = 'bandpass';
+        filter.Q.setValueAtTime(1.8, ctx.currentTime);
+        filter.frequency.setValueAtTime(750, ctx.currentTime);
+        filter.frequency.exponentialRampToValueAtTime(1300, ctx.currentTime + duration * 0.85);
+
+        const gain = ctx.createGain();
+        const now = ctx.currentTime;
+        gain.gain.setValueAtTime(0.0001, now);
+        gain.gain.linearRampToValueAtTime(0.24, now + 0.4);
+        gain.gain.linearRampToValueAtTime(0.0001, now + duration);
+
+        source.connect(filter);
+        filter.connect(gain);
+        gain.connect(ctx.destination);
+
+        source.start(now);
+        source.stop(now + duration + 0.1);
+        activeBreathNodes.push({ source, gain });
+      } catch(_) {}
+    }
+
+    // 3) 입으로 길게 내쉬기 (6초 날숨)
+    function playBreathExhale(duration = 6.0) {
+      if (!isAudioEnabled) return;
+      const ctx = getAudioContext();
+      if (!ctx) return;
+      stopAllBreathingAudio();
+      playGentleChime(440, 1.0, 0.035);
+
+      try {
+        const pBuffer = getSharedPinkNoiseBuffer(ctx);
+        const source = ctx.createBufferSource();
+        source.buffer = pBuffer;
+        source.loop = true;
+
+        const filter = ctx.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.Q.setValueAtTime(0.75, ctx.currentTime);
+        filter.frequency.setValueAtTime(340, ctx.currentTime);
+        filter.frequency.exponentialRampToValueAtTime(180, ctx.currentTime + duration * 0.9);
+
+        const gain = ctx.createGain();
+        const now = ctx.currentTime;
+        gain.gain.setValueAtTime(0.0001, now);
+        gain.gain.linearRampToValueAtTime(0.26, now + 0.5);
+        gain.gain.linearRampToValueAtTime(0.16, now + 3.2);
+        gain.gain.linearRampToValueAtTime(0.0001, now + duration);
+
+        source.connect(filter);
+        filter.connect(gain);
+        gain.connect(ctx.destination);
+
+        source.start(now);
+        source.stop(now + duration + 0.1);
+        activeBreathNodes.push({ source, gain });
+      } catch(_) {}
+    }
+
+    // 4) 보이스 튜닝 STEP 1: 저음 허밍 공명 (15초 딥 베이스 87.3Hz F2 톤 · 잔잔한 웜 사운드)
+    function playHummingVoiceAudio(duration = 15.0) {
+      if (!isAudioEnabled) return;
+      const ctx = getAudioContext();
+      if (!ctx) return;
+      stopAllVoiceTuningAudio();
+
+      try {
+        const now = ctx.currentTime;
+        // 극저음 기본파 (87.3Hz = F2 딥 흉강 공명 주파수)
+        const osc1 = ctx.createOscillator();
+        osc1.type = 'sine';
+        osc1.frequency.setValueAtTime(87.3, now);
+
+        // 잔잔한 서브 2배음 (174.6Hz, 아주 낮은 볼륨으로 풍성함만 보강)
+        const osc2 = ctx.createOscillator();
+        osc2.type = 'sine';
+        osc2.frequency.setValueAtTime(174.6, now);
+        const gain2 = ctx.createGain();
+        gain2.gain.setValueAtTime(0.08, now);
+        osc2.connect(gain2);
+
+        // 매우 느리고 자연스러운 흉곽 호흡 바이브레이션 (1.2Hz)
+        const lfo = ctx.createOscillator();
+        lfo.frequency.setValueAtTime(1.2, now);
+        const lfoGain = ctx.createGain();
+        lfoGain.gain.setValueAtTime(0.3, now);
+        lfo.connect(lfoGain);
+        lfoGain.connect(osc1.frequency);
+
+        // 깊은 딥 로우패스 필터 (160Hz 이하만 통과시켜 높은 톤과 찌르는 소리 100% 차단)
+        const filter = ctx.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(160, now);
+
+        // 편안하고 작은 소리 크기 (피크 볼륨 0.065로 대폭 감쇠)
+        const masterGain = ctx.createGain();
+        masterGain.gain.setValueAtTime(0.0001, now);
+        masterGain.gain.linearRampToValueAtTime(0.065, now + 1.2); // 부드럽고 잔잔한 페이드인
+        masterGain.gain.setValueAtTime(0.065, now + duration - 1.0);
+        masterGain.gain.linearRampToValueAtTime(0.0001, now + duration); // 편안한 페이드아웃
+
+        osc1.connect(filter);
+        gain2.connect(filter);
+        filter.connect(masterGain);
+        masterGain.connect(ctx.destination);
+
+        osc1.start(now);
+        osc2.start(now);
+        lfo.start(now);
+        osc1.stop(now + duration + 0.1);
+        osc2.stop(now + duration + 0.1);
+        lfo.stop(now + duration + 0.1);
+
+        activeVoiceNodes.push({ source: osc1, gain: masterGain });
+        activeVoiceNodes.push({ source: osc2, gain: masterGain });
+      } catch(_) {}
+    }
+
+    // 5) 보이스 튜닝 STEP 2: 턱관절 & 후두 이완 (10초 하품 및 이완 숨소리)
+    function playJawRelaxYawnAudio(duration = 10.0) {
+      if (!isAudioEnabled) return;
+      const ctx = getAudioContext();
+      if (!ctx) return;
+      stopAllVoiceTuningAudio();
+
+      const pBuffer = getSharedPinkNoiseBuffer(ctx);
+      const now = ctx.currentTime;
+
+      function scheduleYawnSegment(startTime, segDuration, isInhale) {
+        try {
+          const source = ctx.createBufferSource();
+          source.buffer = pBuffer;
+          source.loop = true;
+
+          const filter = ctx.createBiquadFilter();
+          const gain = ctx.createGain();
+
+          if (isInhale) {
+            filter.type = 'bandpass';
+            filter.Q.setValueAtTime(1.2, startTime);
+            filter.frequency.setValueAtTime(350, startTime);
+            filter.frequency.exponentialRampToValueAtTime(850, startTime + segDuration * 0.85);
+
+            gain.gain.setValueAtTime(0.0001, startTime);
+            gain.gain.linearRampToValueAtTime(0.20, startTime + segDuration * 0.5);
+            gain.gain.linearRampToValueAtTime(0.0001, startTime + segDuration);
+          } else {
+            filter.type = 'lowpass';
+            filter.Q.setValueAtTime(0.7, startTime);
+            filter.frequency.setValueAtTime(550, startTime);
+            filter.frequency.exponentialRampToValueAtTime(220, startTime + segDuration * 0.9);
+
+            gain.gain.setValueAtTime(0.0001, startTime);
+            gain.gain.linearRampToValueAtTime(0.22, startTime + 0.4);
+            gain.gain.linearRampToValueAtTime(0.0001, startTime + segDuration);
+          }
+
+          source.connect(filter);
+          filter.connect(gain);
+          gain.connect(ctx.destination);
+
+          source.start(startTime);
+          source.stop(startTime + segDuration + 0.1);
+          activeVoiceNodes.push({ source, gain });
+        } catch(_) {}
+      }
+
+      scheduleYawnSegment(now, 2.5, true);
+      scheduleYawnSegment(now + 2.5, 2.5, false);
+      scheduleYawnSegment(now + 5.0, 2.5, true);
+      scheduleYawnSegment(now + 7.5, 2.5, false);
+    }
+
     function switchTab(tabName, btnEl) {
       document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
       document.querySelectorAll('.panel').forEach(panel => panel.classList.remove('active'));
       if (btnEl) btnEl.classList.add('active');
       document.getElementById('panel-' + tabName).classList.add('active');
-      if (tabName !== 'voice') stopMicMeter();
+      if (tabName !== 'breath') {
+        if (breathRunning) stopBreath();
+        stopAllBreathingAudio();
+      }
+      if (tabName !== 'voice') {
+        stopMicMeter();
+        stopAllVoiceTuningAudio();
+      }
       if (tabName === 'logs') {
         renderLogs();
         if (typeof syncBackupBar === 'function') syncBackupBar();
@@ -635,6 +1025,7 @@
 
     function toggleBreath() { breathRunning ? stopBreath() : startBreath(); }
     function stopBreath() {
+      stopAllBreathingAudio();
       breathRunning = false; clearInterval(countdownInterval);
       circle.style.transform = 'scale(1)'; phaseText.innerText = '준비'; timerText.innerText = '3세트';
       startBtn.innerText = '호흡 루틴 시작 (약 35초)'; startBtn.style.background = 'var(--accent)';
@@ -651,13 +1042,23 @@
       }, 100);
     }
     function startBreath() {
+      getAudioContext();
       breathRunning = true; startBtn.innerText = '중지하기'; startBtn.style.background = 'var(--danger)';
       let currentCycle = 1, totalCycles = 3;
       function runCycle() {
         if (!breathRunning) return;
-        if (currentCycle > totalCycles) { stopBreath(); phaseText.innerText = '컨디션 완료'; timerText.innerText = 'READY'; return; }
+        if (currentCycle > totalCycles) {
+          stopBreath();
+          phaseText.innerText = '컨디션 완료';
+          timerText.innerText = 'READY';
+          playGentleChime(659.25, 1.5, 0.08); // E5 완료 벨
+          return;
+        }
+        playBreathInhale(4.0);
         runCountdown(4.0, `[${currentCycle}/3] 코로 들이마시기`, 1.22, () => {
+          playBreathExtraInhale(1.5);
           runCountdown(1.5, `[${currentCycle}/3] 한 번 더 짧게 흡입`, 1.35, () => {
+            playBreathExhale(6.0);
             runCountdown(6.0, `[${currentCycle}/3] 입으로 길게 내쉬기`, 0.92, () => { currentCycle++; runCycle(); });
           });
         });
@@ -666,6 +1067,7 @@
     }
 
     function selectTuningStep(stepNum) {
+      stopAllVoiceTuningAudio();
       for (let i = 1; i <= 3; i++) {
         document.getElementById('pill-' + i).classList.remove('active');
         document.getElementById('tuning-view-' + i).style.display = 'none';
@@ -677,25 +1079,45 @@
 
     let step1Interval = null;
     function runStep1Timer() {
+      getAudioContext();
       clearInterval(step1Interval);
       const waves = document.getElementById('waveBars1'), timerEl = document.getElementById('timer-step1'), btn = document.getElementById('btn-step1');
       let rem = 15.0; waves.classList.add('animating'); btn.innerText = '허밍 진행 중... ("음~")';
+      playHummingVoiceAudio(15.0);
       step1Interval = setInterval(() => {
         rem -= 0.1;
-        if (rem <= 0) { clearInterval(step1Interval); waves.classList.remove('animating'); timerEl.innerText = '완료 ✓'; btn.innerText = '다시 실행 (15초)'; setTimeout(() => selectTuningStep(2), 900); }
+        if (rem <= 0) {
+          clearInterval(step1Interval);
+          stopAllVoiceTuningAudio();
+          waves.classList.remove('animating');
+          timerEl.innerText = '완료 ✓';
+          btn.innerText = '다시 실행 (15초)';
+          playGentleChime(528, 1.2, 0.07);
+          setTimeout(() => selectTuningStep(2), 900);
+        }
         else { timerEl.innerText = rem.toFixed(1) + 's'; }
       }, 100);
     }
 
     let step2Interval = null;
     function runStep2Timer() {
+      getAudioContext();
       clearInterval(step2Interval);
       const jaw = document.getElementById('jawCircle'), timerEl = document.getElementById('timer-step2'), btn = document.getElementById('btn-step2');
       let rem = 10.0, expand = true; btn.innerText = '턱관절 이완 중...'; jaw.style.transform = 'scale(1.35)';
+      playJawRelaxYawnAudio(10.0);
       step2Interval = setInterval(() => {
         rem -= 0.1;
         if (Math.round(rem * 10) % 25 === 0) { expand = !expand; jaw.style.transform = expand ? 'scale(1.35)' : 'scale(0.95)'; }
-        if (rem <= 0) { clearInterval(step2Interval); jaw.style.transform = 'scale(1)'; timerEl.innerText = '완료 ✓'; btn.innerText = '다시 실행 (10초)'; setTimeout(() => selectTuningStep(3), 900); }
+        if (rem <= 0) {
+          clearInterval(step2Interval);
+          stopAllVoiceTuningAudio();
+          jaw.style.transform = 'scale(1)';
+          timerEl.innerText = '완료 ✓';
+          btn.innerText = '다시 실행 (10초)';
+          playGentleChime(528, 1.2, 0.07);
+          setTimeout(() => selectTuningStep(3), 900);
+        }
         else { timerEl.innerText = rem.toFixed(1) + 's'; }
       }, 100);
     }
@@ -1042,7 +1464,7 @@
       renderLogs();
     }
 
-    window.addEventListener('DOMContentLoaded', () => { renderPrompt(getDailyPromptIndex(), true); renderPresetChips(); renderLogs(); });
+    window.addEventListener('DOMContentLoaded', () => { renderPrompt(getDailyPromptIndex(), true); renderPresetChips(); renderLogs(); updateSoundToggleUI(); });
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js').catch(() => {});
