@@ -17,30 +17,30 @@
     :root { --bg-main: #0f172a; --bg-card: #1e293b; --bg-input: #0b1120; --accent: #38bdf8; --accent-glow: rgba(56, 189, 248, 0.25); --purple: #a78bfa; --text-primary: #f8fafc; --text-secondary: #94a3b8; --border: #334155; --success: #34d399; --danger: #f87171; --gold: #fbbf24; }
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
     body { font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Segoe UI", Roboto, sans-serif; background-color: var(--bg-main); color: var(--text-primary); line-height: 1.5; display: flex; justify-content: center; min-height: 100vh; padding: env(safe-area-inset-top) 16px calc(28px + env(safe-area-inset-bottom)) 16px; }
-    .app-container { width: 100%; max-width: 460px; display: flex; flex-direction: column; gap: 16px; padding-top: 16px; }
+    .app-container { width: 100%; max-width: 520px; display: flex; flex-direction: column; gap: 16px; padding-top: 16px; }
     header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
-    .brand h1 { font-size: 18px; font-weight: 700; letter-spacing: 0.5px; }
-    .brand span { font-size: 12px; color: var(--accent); font-weight: 500; }
-    .privacy-badge { font-size: 11px; color: var(--text-secondary); background: var(--bg-card); padding: 4px 10px; border-radius: 999px; border: 1px solid var(--border); }
+    .brand h1 { font-size: 22px; font-weight: 700; letter-spacing: 0.5px; }
+    .brand span { font-size: 14.5px; color: var(--accent); font-weight: 500; }
+    .privacy-badge { font-size: 13px; color: var(--text-secondary); background: var(--bg-card); padding: 5px 12px; border-radius: 999px; border: 1px solid var(--border); }
     .tabs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; background: var(--bg-card); padding: 5px; border-radius: 12px; border: 1px solid var(--border); }
-    .tab-btn { background: transparent; border: none; color: var(--text-secondary); font-size: 12px; font-weight: 600; padding: 10px 2px; border-radius: 8px; cursor: pointer; transition: all 0.2s ease; white-space: nowrap; }
+    .tab-btn { background: transparent; border: none; color: var(--text-secondary); font-size: 13.5px; font-weight: 700; padding: 11px 2px; letter-spacing: -0.3px; border-radius: 8px; cursor: pointer; transition: all 0.2s ease; white-space: nowrap; }
     .tab-btn.active { background: var(--accent); color: #0f172a; }
     .panel { display: none; flex-direction: column; gap: 16px; animation: fadeIn 0.25s ease; }
     .panel.active { display: flex; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
-    .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 20px; }
-    .card-title { font-size: 15px; font-weight: 700; margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between; }
-    .card-desc { font-size: 13px; color: var(--text-secondary); margin-bottom: 16px; word-break: keep-all; }
+    .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 18px; padding: 22px 20px; }
+    .card-title { font-size: 18px; font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; }
+    .card-desc { font-size: 15px; color: var(--text-secondary); margin-bottom: 18px; line-height: 1.6; word-break: keep-all; }
     .breath-stage { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px 0; }
-    .breath-circle { width: 160px; height: 160px; border-radius: 50%; background: radial-gradient(circle, var(--accent-glow) 0%, rgba(15, 23, 42, 0.8) 75%); border: 2px solid var(--accent); display: flex; flex-direction: column; align-items: center; justify-content: center; transition: transform 1s ease-in-out; box-shadow: 0 0 24px var(--accent-glow); }
-    .breath-phase { font-size: 15px; font-weight: 700; text-align: center; }
-    .breath-timer { font-size: 28px; font-weight: 800; color: var(--accent); margin-top: 4px; }
-    .cycle-info { margin-top: 18px; font-size: 12px; color: var(--text-secondary); text-align: center; }
-    .primary-btn { width: 100%; padding: 14px; border-radius: 12px; border: none; background: var(--accent); color: #0f172a; font-size: 15px; font-weight: 700; cursor: pointer; transition: opacity 0.2s; }
+    .breath-circle { width: 180px; height: 180px; border-radius: 50%; background: radial-gradient(circle, var(--accent-glow) 0%, rgba(15, 23, 42, 0.8) 75%); border: 2px solid var(--accent); display: flex; flex-direction: column; align-items: center; justify-content: center; transition: transform 1s ease-in-out; box-shadow: 0 0 24px var(--accent-glow); }
+    .breath-phase { font-size: 18px; font-weight: 700; text-align: center; }
+    .breath-timer { font-size: 34px; font-weight: 800; color: var(--accent); margin-top: 4px; }
+    .cycle-info { margin-top: 18px; font-size: 14.5px; line-height: 1.5; color: var(--text-secondary); text-align: center; }
+    .primary-btn { width: 100%; padding: 16px 14px; border-radius: 12px; border: none; background: var(--accent); color: #0f172a; font-size: 17px; font-weight: 700; cursor: pointer; transition: opacity 0.2s; }
     .primary-btn:active { opacity: 0.85; }
-    .secondary-btn { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid var(--border); background: transparent; color: var(--text-secondary); font-size: 13px; font-weight: 600; cursor: pointer; margin-top: 8px; }
+    .secondary-btn { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid var(--border); background: transparent; color: var(--text-secondary); font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 8px; }
     .step-pills { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 16px; }
-    .step-pill { background: var(--bg-input); border: 1px solid var(--border); color: var(--text-secondary); padding: 8px 4px; border-radius: 8px; font-size: 12px; font-weight: 600; text-align: center; cursor: pointer; }
+    .step-pill { background: var(--bg-input); border: 1px solid var(--border); color: var(--text-secondary); padding: 10px 4px; border-radius: 8px; font-size: 13.5px; font-weight: 600; text-align: center; cursor: pointer; }
     .step-pill.active { border-color: var(--purple); color: var(--purple); background: rgba(167, 139, 250, 0.12); }
     .tuning-stage { background: var(--bg-input); border: 1px solid var(--border); border-radius: 14px; padding: 20px 16px; display: flex; flex-direction: column; align-items: center; text-align: center; margin-bottom: 14px; }
     .wave-bars { display: flex; align-items: center; justify-content: center; gap: 6px; height: 64px; margin: 12px 0; }
@@ -53,55 +53,55 @@
     .wave-bars.animating .wave-bar:nth-child(6) { animation-delay: 0.15s; }
     .wave-bars.animating .wave-bar:nth-child(7) { animation-delay: 0s; }
     @keyframes pulseWave { 0% { height: 14px; opacity: 0.5; } 100% { height: 54px; opacity: 1; } }
-    .tuning-timer-num { font-size: 26px; font-weight: 800; color: var(--purple); margin-bottom: 6px; }
-    .tuning-guide { font-size: 13px; color: var(--text-secondary); line-height: 1.5; word-break: keep-all; }
-    .prompter-meta { width: 100%; display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: var(--accent); margin-top: 10px; padding: 0 2px; }
-    .prompter-box { width: 100%; background: rgba(56, 189, 248, 0.08); border: 1px dashed var(--accent); border-radius: 10px; padding: 16px 14px; font-size: 15px; font-weight: 600; color: var(--text-primary); line-height: 1.65; word-break: keep-all; margin: 6px 0 10px 0; min-height: 82px; display: flex; align-items: center; justify-content: center; }
+    .tuning-timer-num { font-size: 32px; font-weight: 800; color: var(--purple); margin-bottom: 6px; }
+    .tuning-guide { font-size: 15.5px; color: var(--text-secondary); line-height: 1.6; word-break: keep-all; }
+    .prompter-meta { width: 100%; display: flex; justify-content: space-between; align-items: center; font-size: 13.5px; color: var(--accent); margin-top: 10px; padding: 0 2px; }
+    .prompter-box { width: 100%; background: rgba(56, 189, 248, 0.08); border: 1px dashed var(--accent); border-radius: 10px; padding: 18px 16px; font-size: 18px; font-weight: 600; color: var(--text-primary); line-height: 1.7; word-break: keep-all; margin: 6px 0 10px 0; min-height: 96px; display: flex; align-items: center; justify-content: center; }
     .mic-meter-wrap { width: 100%; height: 14px; background: #0f172a; border-radius: 999px; overflow: hidden; border: 1px solid var(--border); margin: 10px 0 6px 0; }
     .mic-meter-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent), var(--success)); transition: width 0.08s ease-out; }
-    .mic-status-text { font-size: 12px; color: var(--text-secondary); }
-    .mini-btn { background: var(--bg-card); border: 1px solid var(--border); color: var(--text-primary); font-size: 12px; padding: 7px 14px; border-radius: 8px; cursor: pointer; }
-    .strategy-banner { background: rgba(56, 189, 248, 0.08); border-left: 3px solid var(--accent); padding: 10px 12px; border-radius: 0 8px 8px 0; font-size: 12px; color: var(--text-secondary); margin-bottom: 16px; line-height: 1.5; word-break: keep-all; }
+    .mic-status-text { font-size: 14px; color: var(--text-secondary); }
+    .mini-btn { background: var(--bg-card); border: 1px solid var(--border); color: var(--text-primary); font-size: 14px; padding: 9px 16px; border-radius: 8px; cursor: pointer; }
+    .strategy-banner { background: rgba(56, 189, 248, 0.08); border-left: 3px solid var(--accent); padding: 12px 14px; border-radius: 0 8px 8px 0; font-size: 14.5px; color: var(--text-secondary); margin-bottom: 18px; line-height: 1.6; word-break: keep-all; }
     .strategy-banner b { color: var(--text-primary); }
-    .preset-label { font-size: 12px; font-weight: 700; color: var(--accent); margin-bottom: 8px; display: block; }
+    .preset-label { font-size: 14.5px; font-weight: 700; color: var(--accent); margin-bottom: 8px; display: block; }
     .preset-grid { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 18px; }
-    .preset-chip { background: var(--bg-input); border: 1px solid var(--border); color: var(--text-secondary); font-size: 12px; padding: 7px 10px; border-radius: 999px; cursor: pointer; transition: all 0.15s ease; }
+    .preset-chip { background: var(--bg-input); border: 1px solid var(--border); color: var(--text-secondary); font-size: 14px; padding: 8px 13px; border-radius: 999px; cursor: pointer; transition: all 0.15s ease; }
     .preset-chip:hover, .preset-chip.selected { background: rgba(56, 189, 248, 0.16); border-color: var(--accent); color: var(--text-primary); font-weight: 600; }
-    .form-group { display: flex; flex-direction: column; gap: 7px; margin-bottom: 14px; transition: opacity 0.4s ease; }
+    .form-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; transition: opacity 0.4s ease; }
     .form-group.shredded { opacity: 0.25; text-decoration: line-through; }
-    .form-group label { font-size: 12px; font-weight: 700; color: var(--text-secondary); }
+    .form-group label { font-size: 14.5px; font-weight: 700; color: var(--text-secondary); }
     .form-group.noise-box label { color: var(--danger); }
     .form-group.signal-box label { color: var(--success); }
-    .form-clear-btn { background: rgba(30, 41, 59, 0.7); border: 1px solid var(--border); color: var(--text-secondary); font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 6px; cursor: pointer; transition: all 0.15s ease; white-space: nowrap; }
+    .form-clear-btn { background: rgba(30, 41, 59, 0.7); border: 1px solid var(--border); color: var(--text-secondary); font-size: 13px; font-weight: 600; padding: 5px 10px; border-radius: 6px; cursor: pointer; transition: all 0.15s ease; white-space: nowrap; }
     .form-clear-btn:hover { border-color: var(--accent); color: var(--text-primary); background: rgba(56, 189, 248, 0.12); }
     .form-clear-btn:active { transform: scale(0.97); }
-    textarea, input[type="text"] { width: 100%; background: var(--bg-input); border: 1px solid var(--border); border-radius: 10px; padding: 11px 12px; color: var(--text-primary); font-size: 16px; font-family: inherit; resize: none; }
+    textarea, input[type="text"] { width: 100%; background: var(--bg-input); border: 1px solid var(--border); border-radius: 10px; padding: 13px 14px; color: var(--text-primary); font-size: 16.5px; line-height: 1.5; font-family: inherit; resize: none; }
     textarea:focus, input[type="text"]:focus { outline: none; border-color: var(--accent); }
     .signal-result-card { display: none; background: linear-gradient(145deg, rgba(52, 211, 153, 0.14), rgba(15, 23, 42, 0.95)); border: 1px solid var(--success); border-radius: 14px; padding: 18px; margin-top: 14px; text-align: center; animation: fadeIn 0.3s ease; }
-    .signal-result-tag { font-size: 11px; font-weight: 700; color: var(--success); letter-spacing: 0.5px; margin-bottom: 6px; }
-    .signal-result-text { font-size: 16px; font-weight: 700; color: var(--text-primary); line-height: 1.5; word-break: keep-all; margin-bottom: 12px; }
-    .view-log-jump-btn { background: rgba(52, 211, 153, 0.2); border: 1px solid var(--success); color: var(--success); font-size: 12px; font-weight: 700; padding: 8px 14px; border-radius: 8px; cursor: pointer; }
+    .signal-result-tag { font-size: 13px; font-weight: 700; color: var(--success); letter-spacing: 0.5px; margin-bottom: 6px; }
+    .signal-result-text { font-size: 19px; font-weight: 700; color: var(--text-primary); line-height: 1.55; word-break: keep-all; margin-bottom: 14px; }
+    .view-log-jump-btn { background: rgba(52, 211, 153, 0.2); border: 1px solid var(--success); color: var(--success); font-size: 14.5px; font-weight: 700; padding: 10px 16px; border-radius: 8px; cursor: pointer; }
 
     /* 4. 리셋 로그 & 성공 아카이브 탭 전용 스타일 */
     .stats-bar { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
     .stat-box { background: var(--bg-input); border: 1px solid var(--border); border-radius: 12px; padding: 14px; text-align: center; }
-    .stat-num { font-size: 22px; font-weight: 800; color: var(--accent); }
+    .stat-num { font-size: 28px; font-weight: 800; color: var(--accent); }
     .stat-num.win { color: var(--gold); }
-    .stat-label { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+    .stat-label { font-size: 13.5px; color: var(--text-secondary); margin-top: 2px; }
     .log-list { display: flex; flex-direction: column; gap: 10px; }
-    .log-item { background: var(--bg-input); border: 1px solid var(--border); border-radius: 12px; padding: 14px; font-size: 12px; display: flex; flex-direction: column; gap: 8px; transition: all 0.2s ease; cursor: pointer; position: relative; }
+    .log-item { background: var(--bg-input); border: 1px solid var(--border); border-radius: 14px; padding: 16px; font-size: 13.5px; display: flex; flex-direction: column; gap: 10px; transition: all 0.2s ease; cursor: pointer; position: relative; }
     .log-item:hover { border-color: var(--accent); transform: translateY(-1px); }
     .log-item:active { transform: scale(0.99); }
     .log-item.verified-win { border-color: var(--gold); background: linear-gradient(145deg, rgba(251, 191, 36, 0.08), var(--bg-input)); }
     .log-top-row { display: flex; justify-content: space-between; align-items: center; }
-    .log-date { font-size: 11px; color: var(--text-secondary); display: flex; align-items: center; gap: 6px; }
-    .replay-pill { background: rgba(56, 189, 248, 0.14); color: var(--accent); font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 999px; }
-    .log-noise-strike, .log-noise-text { color: var(--text-primary); text-decoration: none; font-size: 13px; line-height: 1.45; word-break: keep-all; }
-    .log-action-bold { color: var(--success); font-weight: 700; font-size: 14px; line-height: 1.45; word-break: keep-all; }
-    .log-bottom-row { display: flex; justify-content: space-between; align-items: center; padding-top: 8px; border-top: 1px solid rgba(51, 65, 85, 0.5); }
-    .win-toggle-btn { background: rgba(251, 191, 36, 0.12); border: 1px solid rgba(251, 191, 36, 0.4); color: var(--gold); font-size: 11px; font-weight: 700; padding: 5px 10px; border-radius: 999px; cursor: pointer; z-index: 2; }
+    .log-date { font-size: 13px; color: var(--text-secondary); display: flex; align-items: center; gap: 7px; }
+    .replay-pill { background: rgba(56, 189, 248, 0.14); color: var(--accent); font-size: 12px; font-weight: 700; padding: 3px 9px; border-radius: 999px; }
+    .log-noise-strike, .log-noise-text { color: var(--text-primary); text-decoration: none; font-size: 16px; line-height: 1.55; word-break: keep-all; }
+    .log-action-bold { color: var(--success); font-weight: 700; font-size: 17.5px; line-height: 1.55; word-break: keep-all; }
+    .log-bottom-row { display: flex; justify-content: space-between; align-items: center; padding-top: 10px; border-top: 1px solid rgba(51, 65, 85, 0.5); }
+    .win-toggle-btn { background: rgba(251, 191, 36, 0.12); border: 1px solid rgba(251, 191, 36, 0.4); color: var(--gold); font-size: 13px; font-weight: 700; padding: 7px 12px; border-radius: 999px; cursor: pointer; z-index: 2; }
     .win-toggle-btn.active { background: var(--gold); color: #0f172a; border-color: var(--gold); }
-    .del-log-btn { background: transparent; border: none; color: var(--text-secondary); font-size: 12px; cursor: pointer; padding: 4px 6px; z-index: 2; }
+    .del-log-btn { background: transparent; border: none; color: var(--text-secondary); font-size: 13.5px; cursor: pointer; padding: 5px 8px; z-index: 2; }
 
     /* ==========================================================================
        전체 화면 시네마틱 인터랙티브 리셋 리플레이 오버레이
@@ -152,22 +152,22 @@
       align-items: center;
     }
     .replay-badge {
-      font-size: 11px;
+      font-size: 13.5px;
       font-weight: 800;
       letter-spacing: 1.2px;
       color: var(--accent);
       background: rgba(56, 189, 248, 0.12);
       border: 1px solid rgba(56, 189, 248, 0.35);
-      padding: 5px 12px;
+      padding: 6px 14px;
       border-radius: 999px;
     }
     .replay-close-btn {
       background: rgba(30, 41, 59, 0.8);
       border: 1px solid var(--border);
       color: var(--text-primary);
-      font-size: 13px;
+      font-size: 15px;
       font-weight: 700;
-      padding: 7px 14px;
+      padding: 8px 16px;
       border-radius: 999px;
       cursor: pointer;
     }
@@ -176,18 +176,18 @@
       position: relative;
       z-index: 2;
       width: 100%;
-      max-width: 440px;
+      max-width: 500px;
       margin: auto;
       display: flex;
       flex-direction: column;
-      gap: 18px;
+      gap: 20px;
       padding: 12px 0;
     }
 
     /* 인터랙티브 SVG 일러스트레이션 캔버스 */
     .illustration-box {
       width: 100%;
-      height: 150px;
+      height: 165px;
       background: rgba(15, 23, 42, 0.65);
       border: 1px solid rgba(56, 189, 248, 0.25);
       border-radius: 20px;
@@ -202,7 +202,7 @@
     .illus-caption {
       position: absolute;
       bottom: 10px;
-      font-size: 11px;
+      font-size: 13.5px;
       font-weight: 700;
       letter-spacing: 0.5px;
       color: var(--text-secondary);
@@ -272,7 +272,7 @@
       color: var(--text-secondary);
     }
     .replay-card-label {
-      font-size: 11px;
+      font-size: 13.5px;
       font-weight: 800;
       letter-spacing: 0.6px;
       margin-bottom: 6px;
@@ -281,9 +281,9 @@
       align-items: center;
     }
     .replay-noise-text {
-      font-size: 14px;
+      font-size: 17px;
       color: #fecaca;
-      line-height: 1.5;
+      line-height: 1.55;
       word-break: keep-all;
       transition: all 0.5s ease;
     }
@@ -304,9 +304,9 @@
     .filter-chip-item {
       background: rgba(15, 23, 42, 0.8);
       border-left: 3px solid var(--accent);
-      padding: 8px 12px;
+      padding: 10px 14px;
       border-radius: 0 10px 10px 0;
-      font-size: 12px;
+      font-size: 14.5px;
       color: var(--text-secondary);
       word-break: keep-all;
     }
@@ -318,7 +318,7 @@
       background: linear-gradient(145deg, rgba(16, 185, 129, 0.22), rgba(15, 23, 42, 0.96));
       border: 1.5px solid var(--success);
       box-shadow: 0 10px 35px rgba(52, 211, 153, 0.22);
-      padding: 20px 18px;
+      padding: 22px 20px;
       text-align: center;
     }
     .replay-signal-card.visible {
@@ -326,17 +326,17 @@
       transform: translateY(0) scale(1);
     }
     .replay-signal-title {
-      font-size: 11px;
+      font-size: 13.5px;
       font-weight: 800;
       color: var(--success);
       letter-spacing: 1px;
       margin-bottom: 8px;
     }
     .replay-signal-main {
-      font-size: 17px;
+      font-size: 20px;
       font-weight: 800;
       color: #ffffff;
-      line-height: 1.55;
+      line-height: 1.6;
       word-break: keep-all;
     }
 
@@ -368,30 +368,30 @@
       position: relative;
       z-index: 2;
       width: 100%;
-      max-width: 440px;
+      max-width: 500px;
       margin: 0 auto;
       display: flex;
       gap: 8px;
     }
     .replay-btn-sub {
       flex: 1;
-      padding: 13px;
+      padding: 15px;
       border-radius: 12px;
       border: 1px solid var(--border);
       background: rgba(30, 41, 59, 0.85);
       color: var(--text-primary);
-      font-size: 13px;
+      font-size: 15px;
       font-weight: 700;
       cursor: pointer;
     }
     .replay-btn-win {
       flex: 1.4;
-      padding: 13px;
+      padding: 15px;
       border-radius: 12px;
       border: none;
       background: linear-gradient(90deg, var(--success), #10b981);
       color: #062419;
-      font-size: 14px;
+      font-size: 16px;
       font-weight: 800;
       cursor: pointer;
     }
@@ -437,7 +437,7 @@
     <!-- 탭 2: 보이스 튜닝 -->
     <section id="panel-voice" class="panel">
       <div class="card">
-        <div class="card-title"><span>인터랙티브 보이스 튜닝</span><span style="font-size: 12px; color: var(--purple);">3-Step Studio</span></div>
+        <div class="card-title"><span>인터랙티브 보이스 튜닝</span><span style="font-size: 14px; color: var(--purple);">3-Step Studio</span></div>
         <div class="card-desc">단계별 비주얼 가이드와 실시간 성량 미터로 본래 목소리 톤을 끌어올립니다.</div>
         <div class="step-pills">
           <div id="pill-1" class="step-pill active" onclick="selectTuningStep(1)">STEP 1. 공명</div>
@@ -446,7 +446,7 @@
         </div>
 
         <div id="tuning-view-1" class="tuning-stage">
-          <div style="font-size: 14px; font-weight: 700;">저음 허밍 공명 (15초)</div>
+          <div style="font-size: 17px; font-weight: 700;">저음 허밍 공명 (15초)</div>
           <div id="waveBars1" class="wave-bars">
             <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
           </div>
@@ -456,15 +456,15 @@
         </div>
 
         <div id="tuning-view-2" class="tuning-stage" style="display: none;">
-          <div style="font-size: 14px; font-weight: 700;">턱관절 & 후두 이완 (10초)</div>
-          <div id="jawCircle" style="width: 72px; height: 72px; border-radius: 50%; border: 3px solid var(--purple); margin: 16px 0; display: flex; align-items: center; justify-content: center; transition: transform 1.2s ease-in-out; font-size: 12px; color: var(--purple); font-weight: 700;">RELAX</div>
+          <div style="font-size: 17px; font-weight: 700;">턱관절 & 후두 이완 (10초)</div>
+          <div id="jawCircle" style="width: 80px; height: 80px; border-radius: 50%; border: 3px solid var(--purple); margin: 16px 0; display: flex; align-items: center; justify-content: center; transition: transform 1.2s ease-in-out; font-size: 14px; color: var(--purple); font-weight: 700;">RELAX</div>
           <div id="timer-step2" class="tuning-timer-num">10.0s</div>
           <div class="tuning-guide">하품하듯 입안 공간을 크게 열었다가 힘을 빼고 어금니 사이를 살짝 띄워 성대 긴장을 풉니다.</div>
           <button id="btn-step2" class="primary-btn" style="margin-top: 16px; background: var(--purple);" onclick="runStep2Timer()">10초 이완 가이드 시작</button>
         </div>
 
         <div id="tuning-view-3" class="tuning-stage" style="display: none;">
-          <div style="font-size: 14px; font-weight: 700;">첫 문장 앵커링 & 성량 체크</div>
+          <div style="font-size: 17px; font-weight: 700;">첫 문장 앵커링 & 성량 체크</div>
           <div class="prompter-meta">
             <span id="promptBadge">📅 오늘의 추천 문장</span>
             <span id="promptIndexLabel">1 / 50</span>
@@ -472,7 +472,7 @@
           <div id="prompterText" class="prompter-box"></div>
           <button class="mini-btn" onclick="nextRandomPrompt()">랜덤 예문 뽑기 ↻</button>
           <div style="width: 100%; margin-top: 14px; text-align: left;">
-            <div style="font-size: 12px; color: var(--text-secondary); display: flex; justify-content: space-between;">
+            <div style="font-size: 14.5px; color: var(--text-secondary); display: flex; justify-content: space-between;">
               <span>실시간 보이스 레벨 (녹음 안 됨)</span>
               <span id="dbLabel" style="color: var(--accent);">대기 중</span>
             </div>
@@ -526,7 +526,7 @@
       <div class="card">
         <div class="card-title">
           <span>🏆 나의 멘탈 리셋 & 성공 로그</span>
-          <span style="font-size: 11px; color: var(--gold);">카드를 누르면 리셋 과정 재생</span>
+          <span style="font-size: 13.5px; color: var(--gold);">카드를 누르면 리셋 과정 재생</span>
         </div>
         <div class="card-desc">저장된 카드를 터치하면 <b>불안(노이즈)을 걷어내고 핵심 시그널을 세웠던 전체 화면 일러스트</b>가 재생됩니다.</div>
 
@@ -599,7 +599,7 @@
 
       <!-- 2단계: 팩트 재해석 필터 -->
       <div id="replayFilterGroup" class="replay-filter-chips">
-        <div style="font-size: 11px; font-weight: 700; color: var(--accent); padding-left: 4px;">🔍 REALITY FILTER · 뇌가 놓쳤던 객관적 사실</div>
+        <div style="font-size: 13.5px; font-weight: 700; color: var(--accent); padding-left: 4px;">🔍 REALITY FILTER · 뇌가 놓쳤던 객관적 사실</div>
         <div id="replayAlt1" class="filter-chip-item"></div>
         <div id="replayAlt2" class="filter-chip-item"></div>
       </div>
@@ -909,7 +909,7 @@
       document.getElementById('totalWinCount').innerText = `${winCount}회`;
 
       if (logs.length === 0) {
-        listEl.innerHTML = `<div style="font-size: 13px; color: var(--text-secondary); text-align: center; padding: 24px 10px; line-height: 1.6;">아직 기록된 로그가 없습니다.<br/><b>[3. 노이즈 리셋]</b> 탭에서 상황을 선택해 첫 리셋을 실행하면 이곳에 성공 기록이 쌓입니다.</div>`;
+        listEl.innerHTML = `<div style="font-size: 15px; color: var(--text-secondary); text-align: center; padding: 26px 12px; line-height: 1.65;">아직 기록된 로그가 없습니다.<br/><b>[3. 노이즈 리셋]</b> 탭에서 상황을 선택해 첫 리셋을 실행하면 이곳에 성공 기록이 쌓입니다.</div>`;
         return;
       }
       listEl.innerHTML = '';
@@ -925,7 +925,7 @@
           <div class="log-noise-text">${log.noise}</div>
           <div class="log-action-bold">→ ${log.action}</div>
           <div class="log-bottom-row">
-            <span style="font-size: 11px; color: var(--text-secondary);">${log.win ? '✨ 실제로 해낸 성공 기억' : '카드를 눌러 리셋 과정 다시 보기'}</span>
+            <span style="font-size: 13px; color: var(--text-secondary);">${log.win ? '✨ 실제로 해낸 성공 기억' : '카드를 눌러 리셋 과정 다시 보기'}</span>
             <button class="win-toggle-btn ${log.win ? 'active' : ''}" onclick="toggleWin(${log.id}, event)">
               ${log.win ? '🏆 실전 성공 완료!' : '☆ 해냈어요 체크'}
             </button>
@@ -1053,8 +1053,8 @@
 <div id="pwa-install-banner" style="display:none; position:fixed; bottom:16px; left:16px; right:16px; max-width:440px; margin:0 auto; background:rgba(15,23,42,0.96); border:1px solid rgba(56,189,248,0.45); border-radius:14px; padding:14px 16px; box-shadow:0 10px 28px rgba(0,0,0,0.55); z-index:9999; backdrop-filter:blur(10px); color:#f8fafc; font-family:inherit;">
   <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:10px;">
     <div style="flex:1;">
-      <div style="font-size:13px; font-weight:700; color:#38bdf8; margin-bottom:4px;">📲 바탕화면(홈 화면)에 앱으로 추가</div>
-      <div id="pwa-banner-desc" style="font-size:12px; line-height:1.45; color:#cbd5e1;"></div>
+      <div style="font-size:15px; font-weight:700; color:#38bdf8; margin-bottom:5px;">📲 바탕화면(홈 화면)에 앱으로 추가</div>
+      <div id="pwa-banner-desc" style="font-size:14px; line-height:1.55; color:#cbd5e1;"></div>
       <button id="pwa-install-btn" style="display:none; margin-top:10px; width:100%; background:#0284c7; color:#fff; border:none; border-radius:8px; padding:9px 12px; font-size:13px; font-weight:600; cursor:pointer;">지금 바로 앱 설치하기</button>
     </div>
     <button id="pwa-banner-close" aria-label="닫기" style="background:transparent; border:none; color:#94a3b8; font-size:16px; line-height:1; cursor:pointer; padding:2px 4px;">✕</button>
@@ -1133,14 +1133,14 @@
   .sv-multiline-box {
     width: 100%;
     box-sizing: border-box;
-    min-height: 52px;
-    padding: 12px 14px;
-    border-radius: 10px;
+    min-height: 56px;
+    padding: 14px 15px;
+    border-radius: 12px;
     border: 1px solid rgba(148, 163, 184, 0.22);
     background: rgba(15, 23, 42, 0.72);
     color: #f1f5f9;
     font-family: inherit;
-    font-size: 14px;
+    font-size: 16.5px;
     line-height: 1.5;
     word-break: keep-all;
     resize: none;
@@ -1242,17 +1242,17 @@
     text-align: left;
   }
   .sv-backup-label {
-    font-size: 13px;
+    font-size: 15px;
     font-weight: 600;
     color: #cbd5e1;
   }
   .sv-backup-btn {
-    padding: 7px 14px;
-    border-radius: 8px;
+    padding: 9px 16px;
+    border-radius: 10px;
     border: 1px solid #38bdf8;
     background: rgba(56, 189, 248, 0.18);
     color: #7dd3fc;
-    font-size: 12.5px;
+    font-size: 14.5px;
     font-weight: 700;
     cursor: pointer;
   }
@@ -1608,7 +1608,7 @@ ${dataRows}
       const pct = Math.round((cnt / totalCount) * 100);
       situationBarsHtml += `
         <div style="margin-bottom: 12px;">
-          <div style="display:flex; justify-content:space-between; font-size:12.5px; margin-bottom:5px;">
+          <div style="display:flex; justify-content:space-between; font-size:15px; margin-bottom:6px;">
             <span style="font-weight:700; color:#f1f5f9;">#${idx+1}. ${name}</span>
             <span style="color:#38bdf8; font-weight:700;">${cnt}회 (${pct}%)</span>
           </div>
@@ -1625,13 +1625,13 @@ ${dataRows}
       goldenSignals.forEach((sig, idx) => {
         goldenSignalsHtml += `
           <div style="background:rgba(251,191,36,0.08); border-left:3px solid #fbbf24; border-radius:0 10px 10px 0; padding:12px 14px; margin-bottom:8px;">
-            <div style="font-size:11px; font-weight:800; color:#fbbf24; letter-spacing:0.5px; margin-bottom:3px;">GOLDEN SIGNAL #${idx+1}</div>
-            <div style="font-size:14px; font-weight:700; color:#ffffff; line-height:1.5;">"${sig}"</div>
+            <div style="font-size:13.5px; font-weight:800; color:#fbbf24; letter-spacing:0.5px; margin-bottom:4px;">GOLDEN SIGNAL #${idx+1}</div>
+            <div style="font-size:17.5px; font-weight:700; color:#ffffff; line-height:1.6;">"${sig}"</div>
           </div>
         `;
       });
     } else {
-      goldenSignalsHtml = `<div style="font-size:12.5px; color:#94a3b8; padding:12px; text-align:center;">아직 [실전 성공] 체크된 시그널이 없습니다. 리셋 로그에서 실전 성공을 체크해 보세요!</div>`;
+      goldenSignalsHtml = `<div style="font-size:15px; color:#94a3b8; padding:14px; text-align:center;">아직 [실전 성공] 체크된 시그널이 없습니다. 리셋 로그에서 실전 성공을 체크해 보세요!</div>`;
     }
 
     // 타임라인 저널 카드 HTML (최대 15개)
@@ -1644,12 +1644,12 @@ ${dataRows}
       journalCardsHtml += `
         <div style="background:rgba(15,23,42,0.7); border:1px solid ${isWin ? '#fbbf24' : '#334155'}; border-radius:12px; padding:14px; margin-bottom:10px;">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-            <span style="font-size:11px; color:#94a3b8;">${dateStr} · <b style="color:#38bdf8;">${sit}</b></span>
-            ${isWin ? '<span style="font-size:10.5px; font-weight:800; color:#fbbf24; background:rgba(251,191,36,0.15); padding:2px 8px; border-radius:999px;">🏆 실전 성공</span>' : '<span style="font-size:10px; color:#64748b;">리셋 완료</span>'}
+            <span style="font-size:13.5px; color:#94a3b8;">${dateStr} · <b style="color:#38bdf8;">${sit}</b></span>
+            ${isWin ? '<span style="font-size:12.5px; font-weight:800; color:#fbbf24; background:rgba(251,191,36,0.15); padding:3px 9px; border-radius:999px;">🏆 실전 성공</span>' : '<span style="font-size:12px; color:#64748b;">리셋 완료</span>'}
           </div>
-          <div style="font-size:12.5px; color:#f87171; line-height:1.45; margin-bottom:6px;">❌ <b>노이즈:</b> ${it.noise || '-'}</div>
-          ${alts.length > 0 ? `<div style="font-size:11.5px; color:#94a3b8; line-height:1.4; margin-bottom:8px; padding-left:6px; border-left:2px solid #38bdf8;">🔍 <b>팩트:</b> ${alts[0]}</div>` : ''}
-          <div style="font-size:13.5px; font-weight:700; color:#34d399; line-height:1.45;">✨ <b>시그널:</b> "${it.signal || it.action || '-'}"</div>
+          <div style="font-size:15.5px; color:#f87171; line-height:1.55; margin-bottom:8px;">❌ <b>노이즈:</b> ${it.noise || '-'}</div>
+          ${alts.length > 0 ? `<div style="font-size:14.5px; color:#94a3b8; line-height:1.5; margin-bottom:9px; padding-left:8px; border-left:3px solid #38bdf8;">🔍 <b>팩트:</b> ${alts[0]}</div>` : ''}
+          <div style="font-size:17px; font-weight:700; color:#34d399; line-height:1.55;">✨ <b>시그널:</b> "${it.signal || it.action || '-'}"</div>
         </div>
       `;
     });
@@ -1688,7 +1688,7 @@ ${dataRows}
     }
     .report-wrap {
       width: 100%;
-      max-width: 480px;
+      max-width: 540px;
       display: flex;
       flex-direction: column;
       gap: 16px;
@@ -1701,9 +1701,9 @@ ${dataRows}
       justify-content: space-between;
       align-items: flex-end;
     }
-    .header-title h1 { font-size: 19px; font-weight: 800; color: #fff; letter-spacing: -0.3px; }
-    .header-title span { font-size: 11.5px; color: var(--accent); font-weight: 600; }
-    .header-badge { font-size: 11px; background: rgba(56, 189, 248, 0.12); color: var(--accent); border: 1px solid rgba(56, 189, 248, 0.35); padding: 4px 10px; border-radius: 999px; }
+    .header-title h1 { font-size: 23px; font-weight: 800; color: #fff; letter-spacing: -0.3px; }
+    .header-title span { font-size: 14px; color: var(--accent); font-weight: 600; }
+    .header-badge { font-size: 13.5px; background: rgba(56, 189, 248, 0.12); color: var(--accent); border: 1px solid rgba(56, 189, 248, 0.35); padding: 5px 12px; border-radius: 999px; }
     .card {
       background: var(--card-bg);
       backdrop-filter: blur(12px);
@@ -1713,7 +1713,7 @@ ${dataRows}
       box-shadow: 0 10px 28px rgba(0,0,0,0.4);
     }
     .card-title {
-      font-size: 14px;
+      font-size: 17.5px;
       font-weight: 800;
       margin-bottom: 14px;
       display: flex;
@@ -1734,9 +1734,9 @@ ${dataRows}
       padding: 12px 6px;
       text-align: center;
     }
-    .stat-val { font-size: 20px; font-weight: 800; color: var(--accent); }
+    .stat-val { font-size: 27px; font-weight: 800; color: var(--accent); }
     .stat-val.gold { color: var(--gold); }
-    .stat-lbl { font-size: 10.5px; color: var(--text-muted); margin-top: 2px; }
+    .stat-lbl { font-size: 13px; color: var(--text-muted); margin-top: 3px; }
 
     /* AI 연동 액션 바 */
     .ai-action-box {
@@ -1760,18 +1760,18 @@ ${dataRows}
       display: flex;
       align-items: flex-start;
       gap: 8px;
-      font-size: 12px;
+      font-size: 14.5px;
       color: #cbd5e1;
-      line-height: 1.45;
+      line-height: 1.55;
       word-break: keep-all;
     }
     .guide-num-badge {
       background: var(--purple);
       color: #0f172a;
-      font-size: 10px;
+      font-size: 12px;
       font-weight: 800;
-      width: 17px;
-      height: 17px;
+      width: 22px;
+      height: 22px;
       border-radius: 50%;
       display: inline-flex;
       align-items: center;
@@ -1781,12 +1781,12 @@ ${dataRows}
     }
     .btn-main-copy {
       width: 100%;
-      padding: 14px;
+      padding: 16px;
       border-radius: 12px;
       border: none;
       background: linear-gradient(90deg, #38bdf8, #34d399);
       color: #062419;
-      font-size: 14px;
+      font-size: 16.5px;
       font-weight: 800;
       cursor: pointer;
       display: flex;
@@ -1803,10 +1803,10 @@ ${dataRows}
       box-shadow: 0 4px 18px rgba(16, 185, 129, 0.4);
     }
     .ai-selector-label {
-      font-size: 11.5px;
+      font-size: 14px;
       font-weight: 700;
       color: var(--text-muted);
-      margin: 14px 0 8px 0;
+      margin: 16px 0 10px 0;
       display: flex;
       align-items: center;
       gap: 4px;
@@ -1817,12 +1817,12 @@ ${dataRows}
       gap: 8px;
     }
     .ai-app-btn {
-      padding: 12px 8px;
+      padding: 14px 10px;
       border-radius: 10px;
       border: 1px solid var(--border);
       background: rgba(30, 41, 59, 0.85);
       color: var(--text);
-      font-size: 12.5px;
+      font-size: 15px;
       font-weight: 700;
       cursor: pointer;
       display: flex;
@@ -1834,12 +1834,12 @@ ${dataRows}
     .ai-app-btn:hover { border-color: var(--purple); color: #fff; background: rgba(167, 139, 250, 0.18); }
     .ai-app-btn:active { transform: scale(0.98); }
     .prompt-details {
-      margin-top: 14px;
+      margin-top: 16px;
       background: rgba(15, 23, 42, 0.6);
       border: 1px dashed var(--border);
       border-radius: 10px;
-      padding: 8px 12px;
-      font-size: 11.5px;
+      padding: 10px 14px;
+      font-size: 13.5px;
       color: var(--text-muted);
     }
     .prompt-details summary {
@@ -1855,7 +1855,7 @@ ${dataRows}
       border: 1px solid var(--border);
       border-radius: 6px;
       color: #cbd5e1;
-      font-size: 11px;
+      font-size: 13px;
       font-family: inherit;
       padding: 8px;
       resize: vertical;
@@ -1868,7 +1868,7 @@ ${dataRows}
       background: rgba(15, 23, 42, 0.96);
       border: 1px solid var(--accent);
       color: #fff;
-      font-size: 12.5px;
+      font-size: 14.5px;
       font-weight: 700;
       padding: 12px 20px;
       border-radius: 999px;
@@ -1912,7 +1912,7 @@ ${dataRows}
           <div class="stat-lbl">실전 전환율</div>
         </div>
       </div>
-      <div style="font-size:12px; color:var(--text-muted); line-height:1.5; margin-top:10px; text-align:center;">
+      <div style="font-size:14.5px; color:var(--text-muted); line-height:1.6; margin-top:12px; text-align:center;">
         ${winRate >= 70 ? '✨ <b>탁월한 회복력</b>: 불안한 추측을 신속히 걷어내고 행동으로 연결하고 있습니다.' : '🌱 <b>데이터 축적 중</b>: 상황별 팩트 필터링을 꾸준히 반복할수록 성공률이 급상승합니다.'}
       </div>
     </div>
@@ -1920,7 +1920,7 @@ ${dataRows}
     <!-- 2. 취약 상황 랭킹 프로그레스 바 -->
     <div class="card">
       <div class="card-title">🚨 나의 주요 긴장 트리거 Top 5</div>
-      <div style="font-size:12px; color:var(--text-muted); margin-bottom:14px;">
+      <div style="font-size:14.5px; color:var(--text-muted); margin-bottom:16px;">
         가장 빈번하게 노이즈(불안한 추측)가 발생했던 상황 순위입니다.
       </div>
       ${situationBarsHtml}
@@ -1929,7 +1929,7 @@ ${dataRows}
     <!-- 3. 실전 성공 골든 시그널 치트시트 -->
     <div class="card">
       <div class="card-title">🏆 실전 성공 검증 골든 시그널</div>
-      <div style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">
+      <div style="font-size:14.5px; color:var(--text-muted); margin-bottom:14px;">
         발표나 대화 직전 30초 동안 아래 문장만 복기하고 들어가세요.
       </div>
       ${goldenSignalsHtml}
@@ -1943,9 +1943,9 @@ ${dataRows}
 
     <!-- 5. AI 심층 인지 코칭 연동 섹션 -->
     <div class="ai-action-box">
-      <div style="font-size:15px; font-weight:800; color:#fff; display:flex; align-items:center; gap:6px;">
+      <div style="font-size:18px; font-weight:800; color:#fff; display:flex; align-items:center; gap:6px;">
         <span>🧠 AI 전문 인지치료사 심층 코칭</span>
-        <span style="font-size:10.5px; background:rgba(167,139,250,0.25); color:var(--purple); padding:2px 8px; border-radius:999px;">CBT 기반</span>
+        <span style="font-size:13px; background:rgba(167,139,250,0.25); color:var(--purple); padding:2px 8px; border-radius:999px;">CBT 기반</span>
       </div>
 
       <!-- 사용 설명 안내 가이드 -->
@@ -1962,7 +1962,7 @@ ${dataRows}
 
       <!-- STEP 1: 메인 복사 버튼 (아이콘 포함) -->
       <button type="button" id="btnMainCopy" class="btn-main-copy" onclick="copyPromptWithFeedback()">
-        <span id="copyIcon" style="font-size: 16px;">📋</span>
+        <span id="copyIcon" style="font-size: 19px;">📋</span>
         <span id="copyText">전문 분석 프롬프트 전체 복사하기</span>
       </button>
 
@@ -2127,20 +2127,20 @@ async function handleJsonBackup() {
       bar.style.cssText = 'margin-top: 16px; padding: 16px; border-radius: 14px; background: linear-gradient(145deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.95)); border: 1px solid rgba(56, 189, 248, 0.35); box-shadow: 0 4px 20px rgba(0,0,0,0.3); display: flex; flex-direction: column; gap: 12px;';
       bar.innerHTML = `
         <div style="display: flex; justify-content: space-between; align-items: center;">
-          <div style="font-size: 13.5px; font-weight: 700; color: #38bdf8; display: flex; align-items: center; gap: 6px;">
+          <div style="font-size: 16px; font-weight: 700; color: #38bdf8; display: flex; align-items: center; gap: 6px;">
             <span>📊 나만의 멘탈 분석 웹 리포트</span>
-            <span style="font-size: 10px; background: rgba(56, 189, 248, 0.18); color: #7dd3fc; padding: 2px 7px; border-radius: 999px; font-weight: 700;">독립 HTML</span>
+            <span style="font-size: 12px; background: rgba(56, 189, 248, 0.18); color: #7dd3fc; padding: 3px 8px; border-radius: 999px; font-weight: 700;">독립 HTML</span>
           </div>
-          <span style="font-size: 11px; color: #94a3b8;">무료 · 오프라인</span>
+          <span style="font-size: 13px; color: #94a3b8;">무료 · 오프라인</span>
         </div>
-        <div style="font-size: 12px; color: #cbd5e1; line-height: 1.5; word-break: keep-all;">
+        <div style="font-size: 14.5px; color: #cbd5e1; line-height: 1.6; word-break: keep-all;">
           스마트폰에서 바로 열리는 독립형 진단서를 생성합니다. 긴장 취약점 통계와 <b>ChatGPT · Gemini</b> 전문 인지치료 코칭 연동을 제공합니다.
         </div>
         <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-          <button type="button" id="svBtnExportReport" style="flex: 1.3; min-width: 170px; padding: 11px 14px; border-radius: 10px; border: none; background: linear-gradient(90deg, #38bdf8, #34d399); color: #04241a; font-size: 13px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px;">
+          <button type="button" id="svBtnExportReport" style="flex: 1.3; min-width: 170px; padding: 13px 16px; border-radius: 12px; border: none; background: linear-gradient(90deg, #38bdf8, #34d399); color: #04241a; font-size: 15.5px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px;">
             <span>📊 멘탈 리포트 생성 & AI 코칭</span>
           </button>
-          <button type="button" id="svBtnOnlyJsonBackup" style="flex: 0.8; min-width: 100px; padding: 11px 12px; border-radius: 10px; border: 1px solid rgba(148, 163, 184, 0.3); background: rgba(15, 23, 42, 0.7); color: #cbd5e1; font-size: 12.5px; font-weight: 700; cursor: pointer;">
+          <button type="button" id="svBtnOnlyJsonBackup" style="flex: 0.8; min-width: 100px; padding: 13px 14px; border-radius: 12px; border: 1px solid rgba(148, 163, 184, 0.3); background: rgba(15, 23, 42, 0.7); color: #cbd5e1; font-size: 14.5px; font-weight: 700; cursor: pointer;">
             <span>💾 JSON 백업</span>
           </button>
         </div>
